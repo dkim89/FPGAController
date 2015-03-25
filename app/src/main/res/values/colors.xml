@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="activity_background">#2C3E50</color>
+    <color name="fragment_background">#34495E</color>
+    <color name="hud_background">#337F8C8D</color>
+</resources>
