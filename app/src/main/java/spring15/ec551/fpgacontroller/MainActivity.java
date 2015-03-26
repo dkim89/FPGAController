@@ -21,12 +21,14 @@ import android.view.inputmethod.InputMethod;
 import android.view.inputmethod.InputMethodInfo;
 import android.view.inputmethod.InputMethodManager;
 
+import com.bda.controller.Controller;
+
 import java.util.List;
 
 public class MainActivity extends ActionBarActivity implements MenuInterfaceListener {
 //        BluetoothConnectionListener {
 
-    // Controller object
+    Controller object;
 //    public static UUID mUUID;
 //    public static String mServiceString = "application_server";
 //    public static BluetoothAdapter mBluetoothAdapter;
@@ -69,7 +71,6 @@ public class MainActivity extends ActionBarActivity implements MenuInterfaceList
                 isControllerDetected();
             }
         }
-
 
 //        pairedDevices = BluetoothAdapter.getDefaultAdapter().getBondedDevices();
 //        if (pairedDevices.size() > 0) {
