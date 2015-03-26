@@ -107,12 +107,12 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         String menuString = mListAdapter.getItem(position);
         switch (menuString) {
-//            case NEW_GAME:
-//                // TODO
-//                break;
-//            case FREE_ROAM:
-//                // TODO
-//                break;
+            case NEW_GAME:
+                // TODO
+                break;
+            case FREE_ROAM:
+                // TODO
+                break;
             case SETTINGS:
                 initializeSettingsMenu();
                 mListAdapter.updateList(mList);
@@ -121,8 +121,12 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
                 initializeMainMenu();
                 mListAdapter.updateList(mList);
                 break;
-//            default:
-//                // TODO
+            case CONTROLLER_SETTINGS:
+                break;
+            case VEHICLE_SETTINGS:
+                break;
+            default:
+
         }
     }
 }
