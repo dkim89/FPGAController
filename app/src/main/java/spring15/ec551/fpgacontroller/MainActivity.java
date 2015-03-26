@@ -1,5 +1,8 @@
 package spring15.ec551.fpgacontroller;
 
+import android.app.FragmentTransaction;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -8,20 +11,36 @@ import android.view.MenuItem;
 import com.bda.controller.Controller;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements MenuInterfaceListener{
 
     // Controller object
     Controller mController = null;
 
+    private final String MENU_FRAGMENT = "Menu Fragment";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#00FFFFFF")));
+        getSupportActionBar().hide();
         setContentView(R.layout.activity_main);
-
         mController = Controller.getInstance(this);
         mController.init();
+
+        if (savedInstanceState == null) {
+            initializeMenuFragment();
+        }
+        // TODO: Initialize Controller Status
     }
 
+    private void initializeMenuFragment() {
+        MenuFragment menuFragment = MenuFragment.newInstance();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, menuFragment, MENU_FRAGMENT);
+        transaction.addToBackStack(MENU_FRAGMENT);
+        transaction.commit();
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
