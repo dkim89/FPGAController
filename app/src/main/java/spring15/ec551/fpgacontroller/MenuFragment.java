@@ -21,9 +21,13 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
 
     Context mContext;
 
-    private static final String NEW_GAME = "New Game";
-    private static final String FREE_ROAM = "Free Roam";
-    private static final String SETTINGS = "Settings";
+    private static final String NEW_GAME = "NEW GAME";
+    private static final String FREE_ROAM = "FREE ROAM";
+    private static final String SETTINGS = "SETTINGS";
+
+    private static final String CONTROLLER_SETTINGS = "CONTROLLER SETTINGS";
+    private static final String VEHICLE_SETTINGS = "VEHICLE SETTINGS";
+    private static final String BACK_TO_MAIN = "BACK";
 
     private MenuInterfaceListener mListener;
 
@@ -44,7 +48,9 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initializeMainMenu();
+        if (mList == null) {
+            initializeMainMenu();
+        }
     }
 
     @Override
@@ -64,6 +70,13 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
         mList.add(NEW_GAME);
         mList.add(FREE_ROAM);
         mList.add(SETTINGS);
+    }
+
+    private void initializeSettingsMenu() {
+        mList = new ArrayList<>();
+        mList.add(CONTROLLER_SETTINGS);
+        mList.add(VEHICLE_SETTINGS);
+        mList.add(BACK_TO_MAIN);
     }
 
     @Override
@@ -92,19 +105,24 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//        String menuString = (() (mListAdapter.getItem(position))).getText().toString();
-//        switch (menuString) {
+        String menuString = mListAdapter.getItem(position);
+        switch (menuString) {
 //            case NEW_GAME:
 //                // TODO
 //                break;
 //            case FREE_ROAM:
 //                // TODO
 //                break;
-//            case SETTINGS:
-//                // TODO
-//                break;
+            case SETTINGS:
+                initializeSettingsMenu();
+                mListAdapter.updateList(mList);
+                break;
+            case BACK_TO_MAIN:
+                initializeMainMenu();
+                mListAdapter.updateList(mList);
+                break;
 //            default:
 //                // TODO
-//        }
+        }
     }
 }

@@ -7,4 +7,9 @@
     <color name="custom_text_color">#BDC3C7</color>
 
     <color name="transparent">#00FFFFFF</color>
+
+    <color name="not_connected">#E74C3C</color>
+    <color name="not_connected_end">#EE8277</color>
+    <color name="connected">#2ECC71</color>
+    <color name="connected_end">#82E0AA</color>
 </resources>

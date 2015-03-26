@@ -7,6 +7,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.bda.controller.Controller;
 
@@ -16,6 +17,8 @@ public class MainActivity extends ActionBarActivity implements MenuInterfaceList
     // Controller object
     Controller mController = null;
 
+    View mControllerIndicator;
+    View mVehicleIndicator;
     private final String MENU_FRAGMENT = "Menu Fragment";
 
     @Override
@@ -23,14 +26,16 @@ public class MainActivity extends ActionBarActivity implements MenuInterfaceList
         super.onCreate(savedInstanceState);
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#00FFFFFF")));
         getSupportActionBar().hide();
+
         setContentView(R.layout.activity_main);
         mController = Controller.getInstance(this);
         mController.init();
 
+        mControllerIndicator = (View) findViewById(R.id.controller_indicator);
         if (savedInstanceState == null) {
             initializeMenuFragment();
         }
-        // TODO: Initialize Controller Status
+
     }
 
     private void initializeMenuFragment() {
