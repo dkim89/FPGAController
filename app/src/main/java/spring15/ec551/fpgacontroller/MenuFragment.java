@@ -122,7 +122,7 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
                 mListAdapter.updateList(mList);
                 break;
             case CONTROLLER_SETTINGS:
-                break;
+                mListener.onSettingsClickListener();
             case VEHICLE_SETTINGS:
                 break;
             default:

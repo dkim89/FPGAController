@@ -14,4 +14,7 @@
     <dimen name="status_circle_size">30dp</dimen>
     <dimen name="status_text_size">20sp</dimen>
     <dimen name="status_margin">15dp</dimen>
+
+    <dimen name="controller_button">20sp</dimen>
+    <dimen name="controller_subtitle">30sp</dimen>
 </resources>

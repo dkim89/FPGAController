@@ -10,6 +10,7 @@ import java.io.IOException;
  * Created by davidkim on 3/26/15.
  */
 public class ConnectThread extends Thread {
+    /*
     private final BluetoothSocket mSocket;
     private final BluetoothDevice mDevice;
     private BluetoothAdapter mBluetoothAdapter;
@@ -52,5 +53,5 @@ public class ConnectThread extends Thread {
     }
 
 
-
+*/
 }

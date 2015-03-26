@@ -9,7 +9,9 @@ import java.io.IOException;
 /**
  * Created by davidkim on 3/26/15.
  */
-public class AcceptThread extends Thread {
+
+public class AcceptThread extends Thread {}
+    /*
     private final BluetoothServerSocket mServerSocket;
     private BluetoothAdapter mBluetoothAdapter = null;
     public BluetoothConnectionListener mListener;
@@ -56,3 +58,4 @@ public class AcceptThread extends Thread {
     }
 
 }
+*/
