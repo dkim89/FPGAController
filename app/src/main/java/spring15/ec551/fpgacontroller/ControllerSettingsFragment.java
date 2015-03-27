@@ -16,10 +16,10 @@ import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link ControllerSettingFragment#newInstance} factory method to
+ * Use the {@link ControllerSettingsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ControllerSettingFragment extends Fragment implements KeyboardView.OnKeyboardActionListener {
+public class ControllerSettingsFragment extends Fragment implements KeyboardView.OnKeyboardActionListener {
     public static final int JOYSTICK_UP = 0;
     public static final int JOYSTICK_DOWN = 1;
     public static final int JOYSTICK_LEFT = 2;
@@ -38,14 +38,14 @@ public class ControllerSettingFragment extends Fragment implements KeyboardView.
 
 
     // TODO: Rename and change types and number of parameters
-    public static ControllerSettingFragment newInstance() {
-        ControllerSettingFragment fragment = new ControllerSettingFragment();
+    public static ControllerSettingsFragment newInstance() {
+        ControllerSettingsFragment fragment = new ControllerSettingsFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
     }
 
-    public ControllerSettingFragment() {
+    public ControllerSettingsFragment() {
         // Required empty public constructor
     }
 

@@ -1,42 +1,32 @@
 package spring15.ec551.fpgacontroller;
 
 import android.app.FragmentTransaction;
-import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.inputmethodservice.Keyboard;
+import android.hardware.Sensor;
+
+import android.hardware.SensorManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodInfo;
-import android.view.inputmethod.InputMethodManager;
 
-import java.util.List;
+public class MainActivity extends ActionBarActivity implements MenuInterfaceListener{
 
-public class MainActivity extends ActionBarActivity implements MenuInterfaceListener {
+    final String CONTROLLER_SETTINGS_FRAGMENT = "controller_settings_fragment";
+    final String MENU_FRAGMENT = "Menu Fragment";
 
-//    public static UUID mUUID;
-//    public static String mServiceString = "application_server";
-//    public static BluetoothAdapter mBluetoothAdapter;
-//    Set<BluetoothDevice> mPairedDevices;
-//    BluetoothServerSocket mBluetoothServerSocket;
-//    BluetoothSocket mBluetoothSocket;
-//    AcceptThread mAcceptThread;
-//
-//    ConnectThread mConnectThread;
-//    private static String MOGA_UNIVERSAL_PACKAGE = "net.obsidianx.android.mogaime";
-
-    private final String SETTINGS_FRAGMENT_CHANGE = "Settings_Fragment";
+    private SensorManager mSensorManager;
+    private Sensor mAccelerometer = null;
+    private ControllerVehicleInterfacer mInterfacer;
 
     View mControllerIndicator;
     View mVehicleIndicator;
-    final String MENU_FRAGMENT = "Menu Fragment";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Hides action-menu bar
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#00FFFFFF")));
         getSupportActionBar().hide();
         setContentView(R.layout.activity_main);
@@ -44,34 +34,50 @@ public class MainActivity extends ActionBarActivity implements MenuInterfaceList
         mControllerIndicator = findViewById(R.id.controller_indicator);
         mVehicleIndicator = findViewById(R.id.vehicle_indicator);
 
-        // Checks for the Moga Universal Driver
-//        mInputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//        List<InputMethodInfo> mInputMethodProperties = mInputMethodManager.getEnabledInputMethodList();
-//        final int N = mInputMethodProperties.size();
-//        for (int i=0; i < N; i++) {
-//            InputMethodInfo imi = mInputMethodProperties.get(i);
-//            if (imi.getPackageName().equals(MOGA_UNIVERSAL_PACKAGE)) {
-//                isControllerDetected();
-//            }
-//        }
+        // Initialize the sensors
+        mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
+        // If no Accelerometer, Sensor will remain null
+        if (mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
+            mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        }
 
-//        pairedDevices = BluetoothAdapter.getDefaultAdapter().getBondedDevices();
-//        if (pairedDevices.size() > 0) {
-//            for (BluetoothDevice device : pairedDevices) {
-//                mUUID = device.getUuids()[0].getUuid();
-//                mServiceString = device.getName();
-//                mAcceptThread = new AcceptThread(MainActivity.this);
-//                mAcceptThread.start();
-////                mConnectThread = new ConnectThread(MainActivity.this, device);
-////                mConnectThread.start();
-//            }
-//        }
+        // TODO: Implement saving configurations and retrieving them here
+        mInterfacer = new ControllerVehicleInterfacer();
 
         if (savedInstanceState == null) {
             initializeMenuFragment();
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        // Disable the sensor when application is not being used to convserve battery
+        if (mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
+            mSensorManager.unregisterListener(mInterfacer);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    /** Listener for MenuFragment ListView */
+    @Override
+    public void onSettingsClickListener() {
+        initializeControllerSettingsFragment();
+    }
+
+
+    /** MenuFragment Transactions */
     private void initializeMenuFragment() {
         MenuFragment menuFragment = MenuFragment.newInstance();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
@@ -81,53 +87,26 @@ public class MainActivity extends ActionBarActivity implements MenuInterfaceList
 
     }
 
+    /** ControllerSettingsFragment */
     private void initializeControllerSettingsFragment() {
-        ControllerSettingFragment controllerSettingFragment = ControllerSettingFragment.newInstance();
+        ControllerSettingsFragment controllerSettingFragment = ControllerSettingsFragment.newInstance();
 
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_container, controllerSettingFragment, SETTINGS_FRAGMENT_CHANGE);
-        transaction.addToBackStack(SETTINGS_FRAGMENT_CHANGE);
+        transaction.replace(R.id.fragment_container, controllerSettingFragment, CONTROLLER_SETTINGS_FRAGMENT);
+        transaction.addToBackStack(CONTROLLER_SETTINGS_FRAGMENT);
         transaction.commit();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
 
+    /** Menu Bar Listener */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-//    public void isControllerDetected() {
-//            mControllerIndicator.setBackgroundResource(R.drawable.status_not_calibrated);
-//    }
-//
-//    public void isControllerCalibrated() {
-//        mControllerIndicator.setBackgroundResource(R.drawable.status_connected);
-//    }
-
-//    @Override
-//    public void onSuccessfulPairing(BluetoothServerSocket socket) {
-//        System.out.println("CONNECTED!!");
-//        mBluetoothServerSocket = socket;
-//        isControllerConnected();
-//    }
-
-    @Override
-    public void onSettingsClickListener() {
-        initializeControllerSettingsFragment();
-    }
 }
