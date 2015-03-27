@@ -5,6 +5,9 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.util.Log;
 
+import spring15.ec551.fpgacontroller.accelerometer.AccelerometerHighPassFilter;
+import spring15.ec551.fpgacontroller.resources.UserConfigurationObject;
+
 
 /**
  * Created by davidkim on 3/26/15.
@@ -22,7 +25,7 @@ public class ControllerVehicleInterfacer implements SensorEventListener, Acceler
     private float mFilteredAccelZ;
 
     public ControllerVehicleInterfacer() {
-        mFilter = new AccelerometerHighPassFilter(this);
+//        mFilter = new AccelerometerHighPassFilter(this);
     }
 
     /** Will initialize the configuration settings */

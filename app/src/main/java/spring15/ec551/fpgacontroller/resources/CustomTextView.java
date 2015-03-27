@@ -1,10 +1,12 @@
-package spring15.ec551.fpgacontroller;
+package spring15.ec551.fpgacontroller.resources;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.widget.TextView;
+
+import spring15.ec551.fpgacontroller.R;
 
 /**
  * Created by davidkim on 3/25/15.

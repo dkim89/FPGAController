@@ -39,7 +39,7 @@
                 android:layout_centerVertical="true"
                 android:layout_toRightOf="@+id/controller_text"
                 android:layout_toEndOf="@+id/controller_text" />
-            <spring15.ec551.fpgacontroller.CustomTextView
+            <spring15.ec551.fpgacontroller.resources.CustomTextView
                 android:id="@+id/controller_text"
                 android:layout_height="match_parent"
                 android:layout_width="wrap_content"
@@ -69,7 +69,7 @@
                 android:layout_centerVertical="true"
                 android:layout_toRightOf="@+id/vehicle_text"
                 android:layout_toEndOf="@+id/vehicle_text" />
-            <spring15.ec551.fpgacontroller.CustomTextView
+            <spring15.ec551.fpgacontroller.resources.CustomTextView
                 android:id="@+id/vehicle_text"
                 android:layout_height="match_parent"
                 android:layout_width="wrap_content"

@@ -1,4 +1,4 @@
-package spring15.ec551.fpgacontroller;
+package spring15.ec551.fpgacontroller.fragments;
 
 /**
  * Created by davidkim on 3/25/15.

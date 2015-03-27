@@ -1,10 +1,4 @@
-package spring15.ec551.fpgacontroller;
-
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothServerSocket;
-import android.bluetooth.BluetoothSocket;
-
-import java.io.IOException;
+package spring15.ec551.fpgacontroller.bluetooth;
 
 /**
  * Created by davidkim on 3/26/15.

@@ -4,14 +4,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:weightSum="10"
-    tools:context="spring15.ec551.fpgacontroller.ControllerSettingsFragment">
+    tools:context="spring15.ec551.fpgacontroller.fragments.ControllerFragment">
 
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="2" />
 
-    <spring15.ec551.fpgacontroller.CustomTextView
+    <spring15.ec551.fpgacontroller.resources.CustomTextView
         android:id="@+id/controller_subtitle"
         android:gravity="center"
         android:paddingLeft="@dimen/menu_padding"
@@ -22,7 +22,7 @@
         android:textSize="@dimen/controller_subtitle"
         android:text="TEST" />
 
-    <spring15.ec551.fpgacontroller.CustomTextView
+    <spring15.ec551.fpgacontroller.resources.CustomTextView
         android:id="@+id/controller_button"
         android:gravity="center"
         android:paddingLeft="@dimen/menu_padding"

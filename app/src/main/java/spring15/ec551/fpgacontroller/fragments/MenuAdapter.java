@@ -1,14 +1,15 @@
-package spring15.ec551.fpgacontroller;
+package spring15.ec551.fpgacontroller.fragments;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.List;
+
+import spring15.ec551.fpgacontroller.R;
+import spring15.ec551.fpgacontroller.resources.CustomTextView;
 
 /**
  * Created by davidkim on 3/25/15.

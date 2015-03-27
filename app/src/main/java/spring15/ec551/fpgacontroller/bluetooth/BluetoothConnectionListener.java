@@ -1,4 +1,4 @@
-package spring15.ec551.fpgacontroller;
+package spring15.ec551.fpgacontroller.bluetooth;
 
 import android.bluetooth.BluetoothServerSocket;
 

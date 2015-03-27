@@ -1,4 +1,8 @@
-package spring15.ec551.fpgacontroller;
+package spring15.ec551.fpgacontroller.accelerometer;
+import spring15.ec551.fpgacontroller.ControllerVehicleInterfacer;
+import spring15.ec551.fpgacontroller.fragments.ControllerFragment;
+import spring15.ec551.fpgacontroller.resources.UserConfigurationObject;
+
 import static android.util.FloatMath.sqrt;
 
 /**
@@ -20,8 +24,8 @@ public class AccelerometerHighPassFilter {
     public static final int Z = 2;
 
     /** Implement two float arrays which respond to X,Y,Z coordinates in ascending order */
-    float mPrevAccel[];
-    float mAccel[];
+    float mPrevAccel[] = {0.0f, 0.0f, 0.0f};
+    float mAccel[] = {0.0f, 0.0f, 0.0f};
 
     /**
      *  mUpdateFreq     The rate of readings from accelerometer
@@ -40,12 +44,12 @@ public class AccelerometerHighPassFilter {
     private FilterListener mListener;
 
 
-    public AccelerometerHighPassFilter(ControllerVehicleInterfacer interfacer) {
+    public AccelerometerHighPassFilter(ControllerFragment interfacer) {
         setDefaultConfiguration();
         mListener = interfacer;
     }
 
-    public AccelerometerHighPassFilter(ControllerVehicleInterfacer interfacer, UserConfigurationObject mConfigObject) {
+    public AccelerometerHighPassFilter(ControllerFragment interfacer, UserConfigurationObject mConfigObject) {
         setConfiguration(mConfigObject);
         mListener = interfacer;
     }

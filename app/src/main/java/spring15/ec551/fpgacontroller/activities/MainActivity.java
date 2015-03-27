@@ -1,10 +1,12 @@
-package spring15.ec551.fpgacontroller;
+package spring15.ec551.fpgacontroller.activities;
 
+import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.hardware.Sensor;
 
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -12,17 +14,26 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-public class MainActivity extends ActionBarActivity implements MenuInterfaceListener{
+import spring15.ec551.fpgacontroller.fragments.MenuFragment;
+import spring15.ec551.fpgacontroller.fragments.MenuInterfaceListener;
+import spring15.ec551.fpgacontroller.R;
+import spring15.ec551.fpgacontroller.fragments.ControllerFragment;
+
+public class MainActivity extends ActionBarActivity implements MenuInterfaceListener {
 
     final String CONTROLLER_SETTINGS_FRAGMENT = "controller_settings_fragment";
     final String MENU_FRAGMENT = "Menu Fragment";
 
     private SensorManager mSensorManager;
     private Sensor mAccelerometer = null;
-    private ControllerVehicleInterfacer mInterfacer;
+//    private ControllerVehicleInterfacer mInterfacer;
 
     View mControllerIndicator;
     View mVehicleIndicator;
+
+    String mCurrentFragmentTag;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,8 +53,9 @@ public class MainActivity extends ActionBarActivity implements MenuInterfaceList
         }
 
         // TODO: Implement saving configurations and retrieving them here
-        mInterfacer = new ControllerVehicleInterfacer();
+//        mInterfacer = new ControllerVehicleInterfacer();
 
+        // If no fragment is visible
         if (savedInstanceState == null) {
             initializeMenuFragment();
         }
@@ -53,6 +65,11 @@ public class MainActivity extends ActionBarActivity implements MenuInterfaceList
     public void onResume() {
         super.onResume();
 
+        if (mCurrentFragmentTag.equals(CONTROLLER_SETTINGS_FRAGMENT)) {
+            mSensorManager.registerListener(
+                    (SensorEventListener) getFragmentManager().findFragmentByTag(CONTROLLER_SETTINGS_FRAGMENT),
+                    mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        }
     }
 
     @Override
@@ -60,7 +77,10 @@ public class MainActivity extends ActionBarActivity implements MenuInterfaceList
         super.onPause();
         // Disable the sensor when application is not being used to convserve battery
         if (mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
-            mSensorManager.unregisterListener(mInterfacer);
+            if (mCurrentFragmentTag.equals(CONTROLLER_SETTINGS_FRAGMENT)) {
+                mSensorManager.unregisterListener(
+                        (SensorEventListener) getFragmentManager().findFragmentByTag(CONTROLLER_SETTINGS_FRAGMENT));
+            }
         }
     }
 
@@ -85,16 +105,20 @@ public class MainActivity extends ActionBarActivity implements MenuInterfaceList
         transaction.addToBackStack(MENU_FRAGMENT);
         transaction.commit();
 
+        mCurrentFragmentTag = MENU_FRAGMENT;
     }
 
     /** ControllerSettingsFragment */
     private void initializeControllerSettingsFragment() {
-        ControllerSettingsFragment controllerSettingFragment = ControllerSettingsFragment.newInstance();
+        ControllerFragment controllerSettingFragment = ControllerFragment.newInstance();
 
+        mSensorManager.registerListener(controllerSettingFragment, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, controllerSettingFragment, CONTROLLER_SETTINGS_FRAGMENT);
         transaction.addToBackStack(CONTROLLER_SETTINGS_FRAGMENT);
         transaction.commit();
+
+        mCurrentFragmentTag = CONTROLLER_SETTINGS_FRAGMENT;
     }
 
 

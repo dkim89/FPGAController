@@ -1,4 +1,4 @@
-package spring15.ec551.fpgacontroller;
+package spring15.ec551.fpgacontroller.fragments;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
@@ -10,6 +10,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+
+import spring15.ec551.fpgacontroller.R;
 
 /** TODO
  */
