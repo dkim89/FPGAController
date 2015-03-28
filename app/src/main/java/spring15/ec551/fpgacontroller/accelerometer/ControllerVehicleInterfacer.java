@@ -7,6 +7,8 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
 
+import spring15.ec551.fpgacontroller.fragments.FragmentBackButtonInitializer;
+
 /**
  * Created by davidkim on 3/26/15.
  * The object that will be used throughout the application to handle listening to the Accelerometer
@@ -24,12 +26,13 @@ public class ControllerVehicleInterfacer implements SensorEventListener {
     private AccelerometerHighPassFilter mFilter;
     public ControllerInterfaceListener mInterface;
 
+
     /** The filtered accelerometer values from AccelerometerHighPassFilter */
     float mBaseValues[] = {0.0f, 0.0f, 0.0f};
     float mFilterValues[] = {0.0f, 0.0f, 0.0f};
 
     private final int DELAY_FACTOR = 100000;
-    private final int DELAY_VALUE_LIMIT = 21474;
+    private final int DELAY_VALUE_LIMIT = 20000;
     private int mDelayValue;
 
     public ControllerVehicleInterfacer(Context context, ControllerInterfaceListener interfacer) {
@@ -42,7 +45,7 @@ public class ControllerVehicleInterfacer implements SensorEventListener {
 
         mDelayValue = SensorManager.SENSOR_DELAY_NORMAL;
         registerSensor();
-        mFilter = new AccelerometerHighPassFilter(0.1f);
+        mFilter = new AccelerometerHighPassFilter(0.5f);
     }
 
     public float getFilterValue() {
@@ -55,20 +58,20 @@ public class ControllerVehicleInterfacer implements SensorEventListener {
 
     public void increaseFilterValue() {
         if (mFilter.kFilteringFactor < 1.0f) {
-            if (mFilter.kFilteringFactor > 0.9f) {
+            if (mFilter.kFilteringFactor > 0.95f) {
                 mFilter.kFilteringFactor = 1.0f;
             } else {
-                mFilter.kFilteringFactor += 0.1f;
+                mFilter.kFilteringFactor += 0.05f;
             }
         }
     }
 
     public void decreaseFilterValue() {
         if (mFilter.kFilteringFactor > 0.0f) {
-            if (mFilter.kFilteringFactor < 0.1f) {
+            if (mFilter.kFilteringFactor < 0.05f) {
                 mFilter.kFilteringFactor = 0.0f;
             } else {
-                mFilter.kFilteringFactor -= 0.1f;
+                mFilter.kFilteringFactor -= 0.05f;
             }
         }
     }

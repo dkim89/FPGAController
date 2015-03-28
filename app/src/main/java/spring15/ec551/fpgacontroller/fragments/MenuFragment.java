@@ -81,6 +81,7 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
         mList.add(VEHICLE_SETTINGS);
         mList.add(EXAMINE_ACCEL);
         mList.add(BACK_TO_MAIN);
+
     }
 
     @Override

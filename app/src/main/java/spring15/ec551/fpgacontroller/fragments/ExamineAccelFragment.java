@@ -25,9 +25,10 @@ import spring15.ec551.fpgacontroller.resources.FixedWidthTextView;
 public class ExamineAccelFragment extends Fragment implements ControllerInterfaceListener {
 
     Context mContext;
+    FragmentBackButtonInitializer mFragmentBackInitializer;
+
     FixedWidthTextView mUnfiltered, mFiltered, mNet;
     CustomTextView mFilterControl, mDelay;
-
     Button mResetNet, mIncreaseFilter, mDecreaseFilter, mIncreaseDelay, mDecreaseDelay;
 
     private ControllerVehicleInterfacer mController;
@@ -78,6 +79,7 @@ public class ExamineAccelFragment extends Fragment implements ControllerInterfac
         mFilterControl.setText("Filter Value\n" + String.format("%6.2f", mController.getFilterValue()));
         mDelay.setText("Delay Value\n" + mController.getDelayValue());
 
+        mFragmentBackInitializer.initializeExamineAccelerometerBackstack();
         return view;
     }
 
@@ -128,6 +130,7 @@ public class ExamineAccelFragment extends Fragment implements ControllerInterfac
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         mContext = activity;
+        mFragmentBackInitializer = (FragmentBackButtonInitializer) mContext;
     }
 
     @Override
