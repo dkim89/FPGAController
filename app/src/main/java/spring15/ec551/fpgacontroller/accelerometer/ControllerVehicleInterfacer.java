@@ -7,16 +7,11 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
 
-import spring15.ec551.fpgacontroller.accelerometer.AccelerometerHighPassFilter;
-import spring15.ec551.fpgacontroller.fragments.ControllerInterfaceListener;
-
 /**
  * Created by davidkim on 3/26/15.
  * The object that will be used throughout the application to handle listening to the Accelerometer
  * and processing the information using the filter, and parse the information needed to
  * pass the information to the vehicle.
- *
- *
  */
 public class ControllerVehicleInterfacer implements SensorEventListener {
     final int X = 0;
@@ -33,6 +28,9 @@ public class ControllerVehicleInterfacer implements SensorEventListener {
     float mBaseValues[] = {0.0f, 0.0f, 0.0f};
     float mFilterValues[] = {0.0f, 0.0f, 0.0f};
 
+    private final int DELAY_FACTOR = 100000;
+    private final int DELAY_VALUE_LIMIT = 21474;
+    private int mDelayValue;
 
     public ControllerVehicleInterfacer(Context context, ControllerInterfaceListener interfacer) {
         mInterface = interfacer;
@@ -41,12 +39,59 @@ public class ControllerVehicleInterfacer implements SensorEventListener {
         if (mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
             mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         }
+
+        mDelayValue = SensorManager.SENSOR_DELAY_NORMAL;
         registerSensor();
-        mFilter = new AccelerometerHighPassFilter();
+        mFilter = new AccelerometerHighPassFilter(0.1f);
     }
 
+    public float getFilterValue() {
+        return mFilter.kFilteringFactor;
+    }
+
+    public int getDelayValue() {
+        return mDelayValue * DELAY_FACTOR;
+    }
+
+    public void increaseFilterValue() {
+        if (mFilter.kFilteringFactor < 1.0f) {
+            if (mFilter.kFilteringFactor > 0.9f) {
+                mFilter.kFilteringFactor = 1.0f;
+            } else {
+                mFilter.kFilteringFactor += 0.1f;
+            }
+        }
+    }
+
+    public void decreaseFilterValue() {
+        if (mFilter.kFilteringFactor > 0.0f) {
+            if (mFilter.kFilteringFactor < 0.1f) {
+                mFilter.kFilteringFactor = 0.0f;
+            } else {
+                mFilter.kFilteringFactor -= 0.1f;
+            }
+        }
+    }
+
+    public void increaseDelayValue() {
+        if (mDelayValue < DELAY_VALUE_LIMIT) {
+            mDelayValue += 1;
+            unregisterSensor();
+            registerSensor();
+        }
+    }
+
+    public void decreaseDelayValue() {
+        if (mDelayValue > 0) {
+            mDelayValue -= 1;
+            unregisterSensor();
+            registerSensor();
+        }
+    }
+
+
     public void registerSensor() {
-        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(this, mAccelerometer, mDelayValue);
     }
     public void unregisterSensor() {
         mSensorManager.unregisterListener(this);

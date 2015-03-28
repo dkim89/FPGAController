@@ -1,4 +1,4 @@
-package spring15.ec551.fpgacontroller.fragments;
+package spring15.ec551.fpgacontroller.accelerometer;
 
 /**
  * Created by davidkim on 3/28/15.

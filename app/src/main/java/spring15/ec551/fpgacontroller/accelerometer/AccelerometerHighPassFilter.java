@@ -16,13 +16,14 @@ public class AccelerometerHighPassFilter {
     final int X = 0;
     final int Y = 1;
     final int Z = 2;
-    float kFilteringFactor = 0.9f;
+    float kFilteringFactor = 0.0f;
 
     /** Implement two float arrays which respond to X,Y,Z coordinates in ascending order */
     float mPrevAccel[] = {0.0f, 0.0f, 0.0f};
     float mAccel[] = {0.0f, 0.0f, 0.0f};
 
-    public AccelerometerHighPassFilter() {
+    public AccelerometerHighPassFilter(float factor) {
+        kFilteringFactor = factor;
 //        setDefaultConfiguration();
     }
 

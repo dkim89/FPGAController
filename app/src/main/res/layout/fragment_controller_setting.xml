@@ -1,36 +1,129 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:weightSum="10"
-    tools:context="spring15.ec551.fpgacontroller.fragments.ControllerFragment">
+    tools:context="spring15.ec551.fpgacontroller.fragments.ExamineAccelFragment">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2" />
-
-    <spring15.ec551.fpgacontroller.resources.CustomTextView
-        android:id="@+id/unfiltered_vector"
-        android:gravity="center"
-        android:paddingLeft="@dimen/menu_padding"
-        android:paddingRight="@dimen/menu_padding"
-        android:layout_weight="3"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
+    <spring15.ec551.fpgacontroller.resources.FixedWidthTextView
+        android:id="@+id/filtered_vector"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/vector_margin_first"
+        android:layout_marginLeft="@dimen/vector_margin"
         android:lines="3"
         android:textSize="@dimen/controller_text1" />
 
-    <spring15.ec551.fpgacontroller.resources.CustomTextView
-        android:id="@+id/filtered_vector"
-        android:gravity="center"
-        android:paddingLeft="@dimen/menu_padding"
-        android:paddingRight="@dimen/menu_padding"
-        android:layout_weight="4"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
+    <spring15.ec551.fpgacontroller.resources.FixedWidthTextView
+        android:id="@+id/net_vector"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/filtered_vector"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="@dimen/vector_margin"
+        android:layout_marginLeft="@dimen/vector_margin"
+        android:lines="3"
         android:textSize="@dimen/controller_text1" />
 
+    <spring15.ec551.fpgacontroller.resources.FixedWidthTextView
+        android:id="@+id/unfiltered_vector"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/net_vector"
+        android:layout_marginTop="@dimen/vector_margin"
+        android:layout_marginLeft="@dimen/vector_margin"
+        android:lines="3"
+        android:textSize="@dimen/controller_text1" />
 
-</LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="@dimen/vector_margin"
+        android:layout_marginLeft="@dimen/vector_margin"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/reset_button"
+            android:layout_width="@dimen/button_size"
+            android:layout_height="@dimen/button_size"
+            android:layout_marginTop="@dimen/vector_margin_first"
+            android:background="@drawable/reset_button_selector" />
+
+        <spring15.ec551.fpgacontroller.resources.CustomTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/reset"
+            android:textSize="@dimen/controller_text2"
+            android:layout_gravity="bottom"
+            android:layout_marginLeft="@dimen/vector_margin"/>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/filter_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/vector_margin_first"
+        android:layout_marginRight="@dimen/vector_margin"
+        android:orientation="vertical"
+        android:gravity="center">
+        <spring15.ec551.fpgacontroller.resources.CustomTextView
+            android:id="@+id/kfilter_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:lines="2"
+            android:textSize="@dimen/controller_text1"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="@dimen/vector_margin"/>
+        <Button
+            android:id="@+id/kfilter_up_arrow_button"
+            android:layout_width="@dimen/button_size"
+            android:layout_height="@dimen/button_size"
+            android:background="@drawable/up_arrow_selector"
+            android:layout_marginBottom="@dimen/vector_margin"/>
+        <Button
+            android:id="@+id/kfilter_down_arrow_button"
+            android:layout_width="@dimen/button_size"
+            android:layout_height="@dimen/button_size"
+            android:background="@drawable/down_arrow_selector" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/delay_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/filter_layout"
+        android:layout_marginTop="@dimen/vector_margin"
+        android:layout_marginRight="@dimen/vector_margin"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+        <spring15.ec551.fpgacontroller.resources.CustomTextView
+            android:id="@+id/delay_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:lines="2"
+            android:textSize="@dimen/controller_text1"
+            android:layout_marginBottom="@dimen/vector_margin"/>
+        <Button
+            android:id="@+id/delay_up_arrow_button"
+            android:layout_width="@dimen/button_size"
+            android:layout_height="@dimen/button_size"
+            android:background="@drawable/up_arrow_selector"
+            android:layout_marginBottom="@dimen/vector_margin"/>
+
+        <Button
+            android:id="@+id/delay_down_arrow_button"
+            android:layout_width="@dimen/button_size"
+            android:layout_height="@dimen/button_size"
+            android:background="@drawable/down_arrow_selector" />
+    </LinearLayout>
+
+
+</RelativeLayout>

@@ -8,11 +8,12 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 
 import spring15.ec551.fpgacontroller.fragments.MenuFragment;
 import spring15.ec551.fpgacontroller.fragments.MenuInterfaceListener;
 import spring15.ec551.fpgacontroller.R;
-import spring15.ec551.fpgacontroller.fragments.ControllerFragment;
+import spring15.ec551.fpgacontroller.fragments.ExamineAccelFragment;
 
 public class MainActivity extends ActionBarActivity implements MenuInterfaceListener {
 
@@ -21,6 +22,7 @@ public class MainActivity extends ActionBarActivity implements MenuInterfaceList
 
     View mControllerIndicator;
     View mVehicleIndicator;
+    Button mBackButton;
 
 
     @Override
@@ -33,6 +35,8 @@ public class MainActivity extends ActionBarActivity implements MenuInterfaceList
 
         mControllerIndicator = findViewById(R.id.controller_indicator);
         mVehicleIndicator = findViewById(R.id.vehicle_indicator);
+        mBackButton = (Button) findViewById(R.id.back_button);
+        mBackButton.setVisibility(View.INVISIBLE);
 
         // If no fragment is visible
         if (savedInstanceState == null) {
@@ -63,16 +67,11 @@ public class MainActivity extends ActionBarActivity implements MenuInterfaceList
 //        }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
     /** Listener for MenuFragment ListView */
     @Override
-    public void onSettingsClickListener() {
-        initializeControllerSettingsFragment();
+    public void onSettingsClickListener(String itemName) {
+        if (itemName.equals(MenuFragment.EXAMINE_ACCEL))
+            initializeControllerSettingsFragment();
     }
 
 
@@ -83,15 +82,31 @@ public class MainActivity extends ActionBarActivity implements MenuInterfaceList
         transaction.replace(R.id.fragment_container, menuFragment, MENU_FRAGMENT);
         transaction.addToBackStack(MENU_FRAGMENT);
         transaction.commit();
+
+        mBackButton.setVisibility(View.INVISIBLE);
     }
 
     /** ControllerSettingsFragment */
     private void initializeControllerSettingsFragment() {
-        ControllerFragment controllerSettingFragment = ControllerFragment.newInstance();
+        ExamineAccelFragment controllerSettingFragment = ExamineAccelFragment.newInstance();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, controllerSettingFragment, CONTROLLER_SETTINGS_FRAGMENT);
         transaction.addToBackStack(CONTROLLER_SETTINGS_FRAGMENT);
         transaction.commit();
+
+        mBackButton.setVisibility(View.VISIBLE);
+        mBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initializeMenuFragment();
+            }
+        });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
     }
 
     /** Menu Bar Listener */
