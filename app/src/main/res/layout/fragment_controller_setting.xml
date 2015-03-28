@@ -12,26 +12,25 @@
         android:layout_weight="2" />
 
     <spring15.ec551.fpgacontroller.resources.CustomTextView
-        android:id="@+id/controller_subtitle"
+        android:id="@+id/unfiltered_vector"
         android:gravity="center"
         android:paddingLeft="@dimen/menu_padding"
         android:paddingRight="@dimen/menu_padding"
         android:layout_weight="3"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:textSize="@dimen/controller_subtitle"
-        android:text="TEST" />
+        android:lines="3"
+        android:textSize="@dimen/controller_text1" />
 
     <spring15.ec551.fpgacontroller.resources.CustomTextView
-        android:id="@+id/controller_button"
+        android:id="@+id/filtered_vector"
         android:gravity="center"
         android:paddingLeft="@dimen/menu_padding"
         android:paddingRight="@dimen/menu_padding"
         android:layout_weight="4"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:textSize="@dimen/controller_button"
-        android:text="TEST" />
+        android:textSize="@dimen/controller_text1" />
 
 
 </LinearLayout>
