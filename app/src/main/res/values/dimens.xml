@@ -25,16 +25,19 @@
     <dimen name="vector_margin">20dp</dimen>
     <dimen name="controller_text1">15sp</dimen>
     <dimen name="controller_text2">25sp</dimen>
+    <dimen name="controller_text3">20sp</dimen>
     <dimen name="button_size">50dp</dimen>
 
-    <dimen name="controller_baseline_width">200dp</dimen>
-    <dimen name="controller_baseline_height">10dp</dimen>
-    <dimen name="controller_baseline_dashgap">5dp</dimen>
+    <dimen name="controller_baseline_width">400dp</dimen>
+    <dimen name="controller_baseline_stroke_width">3dp</dimen>
+    <dimen name="controller_baseline_height">5dp</dimen>
+    <dimen name="controller_baseline_dashgap">10dp</dimen>
     <dimen name="controller_baseline_dashwidth">10dp</dimen>
 
     <dimen name="controller_notify_margin">40dp</dimen>
-
+    <dimen name="controller_config_button_width">100dp</dimen>
+    <dimen name="controller_config_button_height">60dp</dimen>
     <!-- Ratio 16:10 -->
-    <dimen name="device_image_width">96dp</dimen>
-    <dimen name="device_image_height">60dp</dimen>
+    <dimen name="device_image_width">160dp</dimen>
+    <dimen name="device_image_height">100dp</dimen>
 </resources>

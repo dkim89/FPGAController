@@ -3,9 +3,14 @@
     android:shape="line">
 
     <stroke
-        android:color="@color/silver"
-        android:width="@dimen/controller_baseline_height"
+        android:color="@color/valid_color"
+        android:width="@dimen/controller_baseline_stroke_width"
         android:dashWidth="@dimen/controller_baseline_dashwidth"
         android:dashGap="@dimen/controller_baseline_dashgap" />
+
+    <size
+        android:width="@dimen/controller_baseline_width"
+        android:height="@dimen/controller_baseline_height" />
+
 
 </shape>

@@ -1,6 +1,5 @@
 package spring15.ec551.fpgacontroller.fragments;
 
-
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -9,11 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-
+import spring15.ec551.fpgacontroller.R;
 import spring15.ec551.fpgacontroller.accelerometer.ControllerInterfaceListener;
 import spring15.ec551.fpgacontroller.accelerometer.ControllerObject;
 import spring15.ec551.fpgacontroller.resources.CustomTextView;
-import spring15.ec551.fpgacontroller.R;
 import spring15.ec551.fpgacontroller.resources.FixedWidthTextView;
 
 
@@ -30,12 +28,10 @@ public class ExamineAccelFragment extends Fragment implements ControllerInterfac
     private FragmentActionListener mListener;
 
     FixedWidthTextView mUnfiltered, mFiltered, mNet;
-    CustomTextView mFilterControl, mDelay;
-    Button mResetNet, mIncreaseFilter, mDecreaseFilter, mIncreaseDelay, mDecreaseDelay;
+    CustomTextView mFilterControl, mAngleSensitivity, mAngleValue;
+    Button mResetNet, mIncreaseFilter, mDecreaseFilter, mIncreaseAngle, mDecreaseAngle;
 
     private ControllerObject mController;
-
-    private float netChange[];
 
     public static ExamineAccelFragment newInstance() {
         ExamineAccelFragment fragment = new ExamineAccelFragment();
@@ -56,7 +52,6 @@ public class ExamineAccelFragment extends Fragment implements ControllerInterfac
 
         /** This will allow the the filtered values to be outputted to this fragment */
         mController = new ControllerObject(mContext, this);
-        netChange = new float[]{0.0f, 0.0f, 0.0f};
     }
 
     @Override
@@ -68,17 +63,17 @@ public class ExamineAccelFragment extends Fragment implements ControllerInterfac
         mFiltered = (FixedWidthTextView) view.findViewById(R.id.filtered_vector);
         mNet = (FixedWidthTextView) view.findViewById(R.id.net_vector);
         mFilterControl = (CustomTextView) view.findViewById(R.id.kfilter_textview);
-        mDelay = (CustomTextView) view.findViewById(R.id.delay_textview);
+        mAngleSensitivity = (CustomTextView) view.findViewById(R.id.angle_textview);
+        mAngleValue = (CustomTextView) view.findViewById(R.id.angle_value);
         mResetNet = (Button) view.findViewById(R.id.reset_button);
         mIncreaseFilter = (Button) view.findViewById(R.id.kfilter_up_arrow_button);
         mDecreaseFilter = (Button) view.findViewById(R.id.kfilter_down_arrow_button);
-        mIncreaseDelay = (Button) view.findViewById(R.id.delay_up_arrow_button);
-        mDecreaseDelay = (Button) view.findViewById(R.id.delay_down_arrow_button);
+        mIncreaseAngle = (Button) view.findViewById(R.id.angle_up_arrow_button);
+        mDecreaseAngle = (Button) view.findViewById(R.id.angle_down_arrow_button);
         initializeListeners();
 
         mFilterControl.setText("Filter Value\n" + String.format("%6.2f", mController.getFilterValue()));
-        mDelay.setText("Delay Value\n" + mController.getDelayValue());
-
+        mAngleSensitivity.setText(String.format("Angle Precision\n" + mController.getAnglePrecision()));
         mListener.initializeExamineAccelerometerBackButton();
         return view;
     }
@@ -87,9 +82,7 @@ public class ExamineAccelFragment extends Fragment implements ControllerInterfac
         mResetNet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                netChange[X] = 0.0f;
-                netChange[Y] = 0.0f;
-                netChange[Z] = 0.0f;
+                mController.resetNetValues();
             }
         });
 
@@ -109,19 +102,19 @@ public class ExamineAccelFragment extends Fragment implements ControllerInterfac
             }
         });
 
-        mIncreaseDelay.setOnClickListener(new View.OnClickListener() {
+        mIncreaseAngle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mController.increaseDelayValue();
-                mDelay.setText("Delay Value\n" + mController.getDelayValue());
+                mController.increaseAngleSensitivity();
+                mAngleSensitivity.setText("Angle Precision\n" + mController.getAnglePrecision());
             }
         });
 
-        mDecreaseDelay.setOnClickListener(new View.OnClickListener() {
+        mDecreaseAngle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mController.decreaseDelayValue();
-                mDelay.setText("Delay Value\n" + mController.getDelayValue());
+                mController.decreaseAngleSensitivity();
+                mAngleSensitivity.setText("Angle Precision\n" + mController.getAnglePrecision());
             }
         });
     }
@@ -148,12 +141,12 @@ public class ExamineAccelFragment extends Fragment implements ControllerInterfac
     }
 
     @Override
-    public void onBaseChangedListener(float valueX, float valueY, float valueZ) {
+    public void onBaseChangedListener(float baseValues[]) {
         if (mUnfiltered != null) {
             mUnfiltered.setText(
-                    String.format("%-13s%8.2f%n", "Raw X:", valueX) +
-                    String.format("%-13s%8.2f%n", "Raw Y:", valueY) +
-                    String.format("%-13s%8.2f%n", "Raw Z:", valueZ));
+                    String.format("%-13s%8.2f%n", "Raw X:", baseValues[X]) +
+                    String.format("%-13s%8.2f%n", "Raw Y:", baseValues[Y]) +
+                    String.format("%-13s%8.2f%n", "Raw Z:", baseValues[Z]));
         }
     }
 
@@ -164,22 +157,24 @@ public class ExamineAccelFragment extends Fragment implements ControllerInterfac
     }
 
     @Override
-    public void onFilterChangedListener(float valueX, float valueY, float valueZ) {
-        netChange[X] += valueX;
-        netChange[Y] += valueY;
-        netChange[Z] += valueZ;
+    public void onFilterChangedListener(float filteredValues[], float netValues[]) {
         if (mFiltered != null) {
             mFiltered.setText(
-                    String.format("%-13s%8.2f%n", "Filtered X:", valueX) +
-                    String.format("%-13s%8.2f%n", "Filtered Y:", valueY) +
-                    String.format("%-13s%8.2f%n", "Filtered Z:", valueZ));
+                    String.format("%-13s%8.2f%n", "Filtered X:", filteredValues[X]) +
+                    String.format("%-13s%8.2f%n", "Filtered Y:", filteredValues[Y]) +
+                    String.format("%-13s%8.2f%n", "Filtered Z:", filteredValues[Z]));
         }
 
         if (mNet != null) {
             mNet.setText(
-                    String.format("%-13s%8.2f%n", "Net X:", netChange[X]) +
-                    String.format("%-13s%8.2f%n", "Net Y:", netChange[Y]) +
-                    String.format("%-13s%8.2f%n", "Net Z:", netChange[Z]));
+                    String.format("%-13s%8.2f%n", "Net X:", netValues[X]) +
+                    String.format("%-13s%8.2f%n", "Net Y:", netValues[Y]) +
+                    String.format("%-13s%8.2f%n", "Net Z:", netValues[Z]));
         }
+    }
+
+    @Override
+    public void onAngleChangeListener(float angleValue) {
+        // TODO
     }
 }

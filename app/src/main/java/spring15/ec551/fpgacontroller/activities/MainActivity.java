@@ -83,7 +83,7 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
     /** ControllerSettingsFragment initializer */
     private void initializeControllerSettingsFragment() {
         if (getFragmentManager().findFragmentByTag(CONTROLLER_SETTINGS_FRAGMENT) == null) {
-            ControllerSettingsFragment controllerSettingsFragment = ControllerSettingsFragment.newInstance();
+            ControllerSettingsFragment controllerSettingsFragment = ControllerSettingsFragment.newInstance(null);
             FragmentTransaction transation = getFragmentManager().beginTransaction();
             transation.replace(R.id.fragment_container, controllerSettingsFragment, CONTROLLER_SETTINGS_FRAGMENT);
             transation.addToBackStack(CONTROLLER_SETTINGS_FRAGMENT);

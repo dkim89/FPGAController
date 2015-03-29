@@ -37,6 +37,14 @@
         android:lines="3"
         android:textSize="@dimen/controller_text1" />
 
+    <spring15.ec551.fpgacontroller.resources.CustomTextView
+        android:id="@+id/angle_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:lines="1"
+        android:textSize="@dimen/controller_text2"/>
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -72,14 +80,14 @@
         android:layout_marginTop="@dimen/vector_margin_first"
         android:layout_marginRight="@dimen/vector_margin"
         android:orientation="vertical"
-        android:gravity="center">
+        android:gravity="end">
         <spring15.ec551.fpgacontroller.resources.CustomTextView
             android:id="@+id/kfilter_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:lines="2"
             android:textSize="@dimen/controller_text1"
-            android:layout_gravity="center_horizontal"
+            android:gravity="end"
             android:layout_marginBottom="@dimen/vector_margin"/>
         <Button
             android:id="@+id/kfilter_up_arrow_button"
@@ -95,7 +103,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/delay_layout"
+        android:id="@+id/angle_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
@@ -103,23 +111,24 @@
         android:layout_marginTop="@dimen/vector_margin"
         android:layout_marginRight="@dimen/vector_margin"
         android:orientation="vertical"
-        android:gravity="center_horizontal">
+        android:gravity="end">
         <spring15.ec551.fpgacontroller.resources.CustomTextView
-            android:id="@+id/delay_textview"
+            android:id="@+id/angle_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:lines="2"
             android:textSize="@dimen/controller_text1"
-            android:layout_marginBottom="@dimen/vector_margin"/>
+            android:layout_marginBottom="@dimen/vector_margin"
+            android:gravity="end"/>
         <Button
-            android:id="@+id/delay_up_arrow_button"
+            android:id="@+id/angle_up_arrow_button"
             android:layout_width="@dimen/button_size"
             android:layout_height="@dimen/button_size"
             android:background="@drawable/up_arrow_selector"
             android:layout_marginBottom="@dimen/vector_margin"/>
 
         <Button
-            android:id="@+id/delay_down_arrow_button"
+            android:id="@+id/angle_down_arrow_button"
             android:layout_width="@dimen/button_size"
             android:layout_height="@dimen/button_size"
             android:background="@drawable/down_arrow_selector" />

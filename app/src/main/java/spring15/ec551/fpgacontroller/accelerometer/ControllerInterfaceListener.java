@@ -5,7 +5,9 @@ package spring15.ec551.fpgacontroller.accelerometer;
  */
 public interface ControllerInterfaceListener {
 
-    public void onBaseChangedListener(float valueX, float valueY, float valueZ);
+    public void onBaseChangedListener(float[] baseValues);
 
-    public void onFilterChangedListener(float valueX, float valueY, float valueZ);
+    public void onFilterChangedListener(float[] filterValues, float[] netValues);
+
+    public void onAngleChangeListener(float angleValue);
 }
