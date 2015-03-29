@@ -32,7 +32,7 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
     public static final String EXAMINE_ACCEL = "EXAMINE ACCELEROMETER";
     public static final String BACK_TO_MAIN = "BACK";
 
-    private MenuInterfaceListener mListener;
+    private FragmentActionListener mListener;
 
     public static MenuFragment newInstance() {
         MenuFragment fragment = new MenuFragment();
@@ -90,7 +90,7 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
         mContext = activity;
 
         try {
-            mListener = (MenuInterfaceListener) mContext;
+            mListener = (FragmentActionListener) mContext;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -123,11 +123,12 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
                 mListAdapter.updateList(mList);
                 break;
             case CONTROLLER_SETTINGS:
+                mListener.onSettingsMenuItemClickListener(CONTROLLER_SETTINGS);
                 break;
             case VEHICLE_SETTINGS:
                 break;
             case EXAMINE_ACCEL:
-                mListener.onSettingsClickListener(EXAMINE_ACCEL);
+                mListener.onSettingsMenuItemClickListener(EXAMINE_ACCEL);
                 break;
             case BACK_TO_MAIN:
                 initializeMainMenu();

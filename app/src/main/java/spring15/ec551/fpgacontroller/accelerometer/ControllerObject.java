@@ -7,15 +7,14 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
 
-import spring15.ec551.fpgacontroller.fragments.FragmentBackButtonInitializer;
-
 /**
  * Created by davidkim on 3/26/15.
- * The object that will be used throughout the application to handle listening to the Accelerometer
- * and processing the information using the filter, and parse the information needed to
- * pass the information to the vehicle.
+ * The controller object that will be used throughout the application.  This class
+ * implements the accelerometer, processing its information with the the high pass filter,
+ * and storing configuration changes.  In addition it will translate the processed values
+ * into values used to handle vehicle steering.
  */
-public class ControllerVehicleInterfacer implements SensorEventListener {
+public class ControllerObject implements SensorEventListener {
     final int X = 0;
     final int Y = 1;
     final int Z = 2;
@@ -31,11 +30,11 @@ public class ControllerVehicleInterfacer implements SensorEventListener {
     float mBaseValues[] = {0.0f, 0.0f, 0.0f};
     float mFilterValues[] = {0.0f, 0.0f, 0.0f};
 
-    private final int DELAY_FACTOR = 100000;
-    private final int DELAY_VALUE_LIMIT = 20000;
+    final int DELAY_FACTOR = 100000;
+    final int DELAY_VALUE_LIMIT = 20000;
     private int mDelayValue;
 
-    public ControllerVehicleInterfacer(Context context, ControllerInterfaceListener interfacer) {
+    public ControllerObject(Context context, ControllerInterfaceListener interfacer) {
         mInterface = interfacer;
         mSensorManager = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
 

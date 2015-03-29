@@ -17,27 +17,33 @@ public class CustomTextView extends TextView{
 
     public CustomTextView(Context context) {
         super(context);
-        mTypeface = Typeface.createFromAsset(context.getAssets(), "opensans_bold.ttf");
-        this.setTypeface(mTypeface);
-        this.setTextColor(getResources().getColor(R.color.custom_text_color));
+        if (!isInEditMode()) {
+            init(context);
+        }
     }
 
     public CustomTextView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mTypeface = Typeface.createFromAsset(context.getAssets(), "opensans_bold.ttf");
-        this.setTypeface(mTypeface);
-        this.setTextColor(getResources().getColor(R.color.custom_text_color));
+        if (!isInEditMode()) {
+            init(context);
+        }
     }
 
     public CustomTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mTypeface = Typeface.createFromAsset(context.getAssets(), "opensans_bold.ttf");
-        this.setTypeface(mTypeface);
-        this.setTextColor(getResources().getColor(R.color.custom_text_color));
+        if (!isInEditMode()) {
+            init(context);
+        }
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+    }
+
+    private void init(Context context) {
+        mTypeface = Typeface.createFromAsset(context.getAssets(), "opensans_bold.ttf");
+        this.setTypeface(mTypeface);
+        this.setTextColor(getResources().getColor(R.color.silver));
     }
 }

@@ -11,32 +11,31 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import spring15.ec551.fpgacontroller.accelerometer.ControllerInterfaceListener;
-import spring15.ec551.fpgacontroller.accelerometer.ControllerVehicleInterfacer;
+import spring15.ec551.fpgacontroller.accelerometer.ControllerObject;
 import spring15.ec551.fpgacontroller.resources.CustomTextView;
 import spring15.ec551.fpgacontroller.R;
 import spring15.ec551.fpgacontroller.resources.FixedWidthTextView;
 
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link ExamineAccelFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * Created by davidkim on 3/27/15
  */
 public class ExamineAccelFragment extends Fragment implements ControllerInterfaceListener {
 
+    private final int X = 0;
+    private final int Y = 1;
+    private final int Z = 2;
+
     Context mContext;
-    FragmentBackButtonInitializer mFragmentBackInitializer;
+    private FragmentActionListener mListener;
 
     FixedWidthTextView mUnfiltered, mFiltered, mNet;
     CustomTextView mFilterControl, mDelay;
     Button mResetNet, mIncreaseFilter, mDecreaseFilter, mIncreaseDelay, mDecreaseDelay;
 
-    private ControllerVehicleInterfacer mController;
+    private ControllerObject mController;
 
-    private final int X = 0;
-    private final int Y = 1;
-    private final int Z = 2;
-    private float netChange[] = {0.0f, 0.0f, 0.0f};
+    private float netChange[];
 
     public static ExamineAccelFragment newInstance() {
         ExamineAccelFragment fragment = new ExamineAccelFragment();
@@ -56,13 +55,14 @@ public class ExamineAccelFragment extends Fragment implements ControllerInterfac
         }
 
         /** This will allow the the filtered values to be outputted to this fragment */
-        mController = new ControllerVehicleInterfacer(mContext, this);
+        mController = new ControllerObject(mContext, this);
+        netChange = new float[]{0.0f, 0.0f, 0.0f};
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_controller_setting, container, false);
+        View view = inflater.inflate(R.layout.fragment_accel, container, false);
 
         mUnfiltered = (FixedWidthTextView) view.findViewById(R.id.unfiltered_vector);
         mFiltered = (FixedWidthTextView) view.findViewById(R.id.filtered_vector);
@@ -79,7 +79,7 @@ public class ExamineAccelFragment extends Fragment implements ControllerInterfac
         mFilterControl.setText("Filter Value\n" + String.format("%6.2f", mController.getFilterValue()));
         mDelay.setText("Delay Value\n" + mController.getDelayValue());
 
-        mFragmentBackInitializer.initializeExamineAccelerometerBackstack();
+        mListener.initializeExamineAccelerometerBackButton();
         return view;
     }
 
@@ -130,7 +130,7 @@ public class ExamineAccelFragment extends Fragment implements ControllerInterfac
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         mContext = activity;
-        mFragmentBackInitializer = (FragmentBackButtonInitializer) mContext;
+        mListener = (FragmentActionListener) mContext;
     }
 
     @Override
@@ -155,6 +155,12 @@ public class ExamineAccelFragment extends Fragment implements ControllerInterfac
                     String.format("%-13s%8.2f%n", "Raw Y:", valueY) +
                     String.format("%-13s%8.2f%n", "Raw Z:", valueZ));
         }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
     }
 
     @Override

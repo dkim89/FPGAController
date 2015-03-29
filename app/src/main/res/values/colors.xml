@@ -4,14 +4,14 @@
     <color name="fragment_background">#34495E</color>
     <color name="hud_background">#337F8C8D</color>
     <color name="menu_item_background">#662980B9</color>
-    <color name="custom_text_color">#BDC3C7</color>
+    <color name="silver">#BDC3C7</color>
 
     <color name="transparent">#00FFFFFF</color>
 
-    <color name="not_connected">#E74C3C</color>
-    <color name="not_connected_end">#EE8277</color>
-    <color name="connected">#2ECC71</color>
-    <color name="connected_end">#82E0AA</color>
+    <color name="invalid_color">#E74C3C</color>
+    <color name="invalid_color_end">#EE8277</color>
+    <color name="valid_color">#2ECC71</color>
+    <color name="valid_color_end">#82E0AA</color>
     <color name="not_calibrated">#F1C40F</color>
     <color name="not_calibrated_end">#F39C12</color>
     <color name="reset_color">#ECF0F1</color>
