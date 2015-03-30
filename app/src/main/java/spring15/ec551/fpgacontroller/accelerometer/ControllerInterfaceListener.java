@@ -9,5 +9,5 @@ public interface ControllerInterfaceListener {
 
     public void onFilterChangedListener(float[] filterValues, float[] netValues);
 
-    public void onAngleChangeListener(float angleValue);
+    public void onAngleChangeListener(int angleValue);
 }

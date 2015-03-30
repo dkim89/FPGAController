@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <solid
+        android:color="@color/valid_color" />
+
+    <size
+        android:width="@dimen/controller_config_button_width"
+        android:height="@dimen/controller_config_button_height" />
+
+    <stroke
+        android:color="@color/silver"
+        android:width="@dimen/button_stroke_width" />
+
+    <corners
+        android:radius="@dimen/button_radius" />
+
+
+</shape>

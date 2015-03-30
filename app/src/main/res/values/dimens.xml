@@ -34,9 +34,13 @@
     <dimen name="controller_baseline_dashgap">10dp</dimen>
     <dimen name="controller_baseline_dashwidth">10dp</dimen>
 
+    <dimen name="button_radius">5dp</dimen>
+    <dimen name="button_stroke_width">2dp</dimen>
+
     <dimen name="controller_notify_margin">40dp</dimen>
-    <dimen name="controller_config_button_width">100dp</dimen>
+    <dimen name="controller_config_button_width">120dp</dimen>
     <dimen name="controller_config_button_height">60dp</dimen>
+
     <!-- Ratio 16:10 -->
     <dimen name="device_image_width">160dp</dimen>
     <dimen name="device_image_height">100dp</dimen>

@@ -17,7 +17,7 @@ public class UserConfigurationObject implements Parcelable{
     float mAngleSensitivity;
 
     public UserConfigurationObject() {
-        mNetValues = new float[3];
+        mNetValues = new float[]{0.0f,0.0f,0.0f};
         mLeftBound = 0;
         mRightBound = 0;
         mAngleSensitivity = 0.0f;
@@ -51,12 +51,12 @@ public class UserConfigurationObject implements Parcelable{
     public float getKFactor() {
         return mKFactor;
     }
-
     protected UserConfigurationObject(Parcel in) {
-        mLeftBound = in.readInt();
-        mRightBound = in.readInt();
         mKFactor = in.readFloat();
         mAngleSensitivity = in.readFloat();
+        mNetValues = in.createFloatArray();
+        mLeftBound = in.readInt();
+        mRightBound = in.readInt();
     }
 
     @Override
@@ -66,10 +66,11 @@ public class UserConfigurationObject implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(mLeftBound);
-        dest.writeInt(mRightBound);
         dest.writeFloat(mKFactor);
         dest.writeFloat(mAngleSensitivity);
+        dest.writeFloatArray(mNetValues);
+        dest.writeInt(mLeftBound);
+        dest.writeInt(mRightBound);
     }
 
     @SuppressWarnings("unused")
@@ -84,6 +85,4 @@ public class UserConfigurationObject implements Parcelable{
             return new UserConfigurationObject[size];
         }
     };
-
 }
-

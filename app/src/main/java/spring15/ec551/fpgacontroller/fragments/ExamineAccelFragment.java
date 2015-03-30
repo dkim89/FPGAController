@@ -174,7 +174,7 @@ public class ExamineAccelFragment extends Fragment implements ControllerInterfac
     }
 
     @Override
-    public void onAngleChangeListener(float angleValue) {
+    public void onAngleChangeListener(int angleValue) {
         // TODO
     }
 }

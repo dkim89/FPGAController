@@ -41,10 +41,9 @@ public class ControllerObject implements SensorEventListener {
     final float ZERO_FLOAT = 0.0f;
 
     /** Used to calculate the angle **/
-    float mAngle;
     float mAnglePrecision;
-    int mLeftBound;             // Uses integer for precision purposes
-    int mRightBound;            // Uses integer for precision purposes
+    int mLeftBound;               // Uses integer for precision purposes
+    int mRightBound;              // Uses integer for precision purposes
     final float ANGLE_SENSITIVITY_HIGH_LIMIT = 10.0f;
     final float ANGLE_INCREMENT = 0.5f;
     final float MAX_ANGLE = 360.0f;
@@ -56,7 +55,6 @@ public class ControllerObject implements SensorEventListener {
 
     public ControllerObject(Context context, ControllerInterfaceListener interfacer,
                             UserConfigurationObject object) {
-        mAngle = 0.0f;
         mInterface = interfacer;
         mBaseValues = new float[]{0.0f, 0.0f, 0.0f};
         mFilterValues = new float[]{0.0f, 0.0f, 0.0f};
@@ -64,8 +62,8 @@ public class ControllerObject implements SensorEventListener {
         /* Either initialize default values or user config values */
         if (object == null) {
             mNetValues = new float[]{0.0f, 0.0f, 0.0f};
-            mLeftBound = 0;
-            mRightBound = 0;
+            mLeftBound = 5;
+            mRightBound = 5;
             mAnglePrecision = 1.0f;
             mFilter = new AccelerometerHighPassFilter(0.65f);
         } else {
@@ -167,7 +165,7 @@ public class ControllerObject implements SensorEventListener {
         mInterface.onBaseChangedListener(mBaseValues);
         mInterface.onFilterChangedListener(mFilterValues, mNetValues);
 
-        if (mLeftBound != 0.0f ) {
+        if (mLeftBound!= 0 && mRightBound !=0) {
             calculateAngle();
         }
     }
@@ -177,33 +175,33 @@ public class ControllerObject implements SensorEventListener {
         Log.d("ACCURACYCHANGED: ", "Integer: " + accuracy);
     }
 
-    public void setLeftBound(int leftBound) {
-        this.mLeftBound = leftBound;
+    public void setLeftBound(int[] leftBound) {
+        this.mLeftBound = Math.abs(leftBound[0]) + Math.abs(leftBound[1]);
     }
 
-    public void setRightRound(int rightRound) {
-        this.mRightBound = rightRound;
+    public void setRightRound(int[] rightRound) {
+        this.mRightBound = Math.abs(rightRound[0]) + Math.abs(rightRound[1]);
     }
 
     /** Calculates the angle value */
     public void calculateAngle() {
-        // TODO TEST
-        mInterface.onAngleChangeListener((mNetValues[X] + mNetValues[Y]) / 2);
+        float xySum = (Math.abs(mNetValues[X]) + Math.abs(mNetValues[Y])) / 2;
 
-        // TODO
-//        float angle = (float) Math.toDegrees(Math.atan2((-1.0f*mNetValues[Y]), mNetValues[X]));
-//        if ((angle > mAngle + mAnglePrecision) || (angle < mAngle - mAnglePrecision)) {
-//            if (angle >= ZERO_FLOAT && angle <= MAX_ANGLE) {
-//                mAngle = angle;
-//                mInterface.onAngleChangeListener(mAngle);
-//            } else if (angle > MAX_ANGLE) {
-//                mAngle = MAX_ANGLE - angle;
-//                mInterface.onAngleChangeListener(mAngle);
-//            } else {
-//                mAngle = MAX_ANGLE + angle;
-//                mInterface.onAngleChangeListener(mAngle);
-//            }
-//        }
+        if (mNetValues[Y] < 0) {
+            int rawAngle = (int)((xySum/ (float)mLeftBound) * 90);
+            if (rawAngle > 90) {
+                mInterface.onAngleChangeListener(-90);
+            } else {
+                mInterface.onAngleChangeListener(-1*rawAngle);
+            }
+        } else {
+            int rawAngle = (int)((xySum/ (float)mRightBound) * 90);
+            if (rawAngle > 90) {
+                mInterface.onAngleChangeListener(90);
+            } else {
+                mInterface.onAngleChangeListener(rawAngle);
+            }
+        }
     }
 
 }

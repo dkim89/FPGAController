@@ -12,9 +12,10 @@
     <color name="invalid_color_end">#EE8277</color>
     <color name="valid_color">#2ECC71</color>
     <color name="valid_color_end">#82E0AA</color>
+    <color name="valid_color_dark">#27AE60</color>
     <color name="not_calibrated">#F1C40F</color>
     <color name="not_calibrated_end">#F39C12</color>
     <color name="reset_color">#ECF0F1</color>
-    <color name="reset_color_end">#000000</color>
+    <color name="black">#000000</color>
     <color name="flat_blue">#3498D8</color>
 </resources>

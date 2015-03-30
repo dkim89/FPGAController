@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
+        android:gravity="center"
         android:layout_marginTop="@dimen/vector_margin_first"
         android:textSize="@dimen/controller_text3"
         android:text="@string/instruction"/>
@@ -24,8 +25,8 @@
         android:layout_centerInParent="true"/>
 
     <ImageView
-        android:layerType="software"
         android:id="@+id/controller_instruc_baseline"
+        android:layerType="software"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/calibration_line_neutral"
@@ -42,12 +43,16 @@
         android:textSize="@dimen/controller_text3"
         android:text="@string/notify"/>
 
-    <TextView
+    <spring15.ec551.fpgacontroller.resources.CustomTextView
         android:id="@+id/controller_button"
         android:layout_width="@dimen/controller_config_button_width"
         android:layout_height="@dimen/controller_config_button_height"
         android:layout_marginBottom="@dimen/controller_notify_margin"
         android:layout_above="@id/controller_notify_textview"
-        android:background="@color/valid_color"/>
+        android:background="@drawable/config_button_selector"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:textSize="@dimen/controller_text2"
+        android:clickable="true"/>
 
 </RelativeLayout>
