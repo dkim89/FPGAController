@@ -27,7 +27,7 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
     private static final String FREE_ROAM = "FREE ROAM";
     private static final String SETTINGS = "SETTINGS";
 
-    public static final String CONTROLLER_SETTINGS = "CONTROLLER SETTINGS";
+    public static final String CALIBRATE_CONTROLLER = "CALIBRATE CONTROLLER";
     public static final String VEHICLE_SETTINGS = "VEHICLE SETTINGS";
     public static final String EXAMINE_ACCEL = "EXAMINE ACCELEROMETER";
     public static final String BACK_TO_MAIN = "BACK";
@@ -64,6 +64,8 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
         mListView.setAdapter(mListAdapter);
         mListView.setOnItemClickListener(this);
 
+        mListener.enterMainMenuFragment();
+
         return view;
     }
 
@@ -77,10 +79,10 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
 
     private void initializeSettingsMenu() {
         mList = new ArrayList<>();
-        mList.add(CONTROLLER_SETTINGS);
+        mList.add(BACK_TO_MAIN);
+        mList.add(CALIBRATE_CONTROLLER);
         mList.add(VEHICLE_SETTINGS);
         mList.add(EXAMINE_ACCEL);
-        mList.add(BACK_TO_MAIN);
 
     }
 
@@ -122,8 +124,8 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
                 initializeSettingsMenu();
                 mListAdapter.updateList(mList);
                 break;
-            case CONTROLLER_SETTINGS:
-                mListener.onSettingsMenuItemClickListener(CONTROLLER_SETTINGS);
+            case CALIBRATE_CONTROLLER:
+                mListener.onSettingsMenuItemClickListener(CALIBRATE_CONTROLLER);
                 break;
             case VEHICLE_SETTINGS:
                 break;

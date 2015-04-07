@@ -3,7 +3,7 @@
     android:shape="rectangle">
 
     <solid
-        android:color="@color/valid_color_dark" />
+        android:color="@color/flat_green2" />
 
     <size
         android:width="@dimen/controller_config_button_width"

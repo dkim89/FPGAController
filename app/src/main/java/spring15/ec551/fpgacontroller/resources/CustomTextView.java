@@ -42,8 +42,8 @@ public class CustomTextView extends TextView{
     }
 
     private void init(Context context) {
-        mTypeface = Typeface.createFromAsset(context.getAssets(), "opensans_bold.ttf");
+        mTypeface = Typeface.createFromAsset(context.getAssets(), "roboto/roboto_light.ttf");
         this.setTypeface(mTypeface);
-        this.setTextColor(getResources().getColor(R.color.silver));
+        this.setTextColor(getResources().getColor(R.color.flat_white));
     }
 }

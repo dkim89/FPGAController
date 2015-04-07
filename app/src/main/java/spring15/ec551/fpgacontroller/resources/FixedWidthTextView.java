@@ -17,21 +17,21 @@ public class FixedWidthTextView extends TextView{
 
     public FixedWidthTextView(Context context) {
         super(context);
-        mTypeface = Typeface.createFromAsset(context.getAssets(), "inconsolata_regular.ttf");
+        mTypeface = Typeface.createFromAsset(context.getAssets(), "inconsolata/inconsolata_regular.otf");
         this.setTypeface(mTypeface);
         this.setTextColor(getResources().getColor(R.color.silver));
     }
 
     public FixedWidthTextView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mTypeface = Typeface.createFromAsset(context.getAssets(), "inconsolata_regular.ttf");
+        mTypeface = Typeface.createFromAsset(context.getAssets(), "inconsolata/inconsolata_regular.otf");
         this.setTypeface(mTypeface);
         this.setTextColor(getResources().getColor(R.color.silver));
     }
 
     public FixedWidthTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mTypeface = Typeface.createFromAsset(context.getAssets(), "inconsolata_regular.ttf");
+        mTypeface = Typeface.createFromAsset(context.getAssets(), "inconsolata/inconsolata_regular.otf");
         this.setTypeface(mTypeface);
         this.setTextColor(getResources().getColor(R.color.silver));
     }

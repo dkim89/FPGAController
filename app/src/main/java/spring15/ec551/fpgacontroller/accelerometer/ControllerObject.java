@@ -26,7 +26,6 @@ public class ControllerObject implements SensorEventListener {
     private Sensor mAccelerometer;
 
     /** The filter used to remove the pesky noise */
-    // TODO allow users to change this?
     private AccelerometerHighPassFilter mFilter;
     final float KFACTOR_LIMIT = 1.0f;
     final float KFACTOR_INCREMENT = 0.05f;
@@ -46,16 +45,24 @@ public class ControllerObject implements SensorEventListener {
     int mRightBound;              // Uses integer for precision purposes
     final float ANGLE_SENSITIVITY_HIGH_LIMIT = 10.0f;
     final float ANGLE_INCREMENT = 0.5f;
-    final float MAX_ANGLE = 360.0f;
+
+    /** Implements an empty controller object for activity level. This should not
+     *  initially be set to listen to anything */
+    public ControllerObject(Context context) {
+        this(context, null, null);
+    }
 
     /** Implements default values */
     public ControllerObject(Context context, ControllerInterfaceListener interfacer) {
        this(context,interfacer, null);
     }
 
+
     public ControllerObject(Context context, ControllerInterfaceListener interfacer,
                             UserConfigurationObject object) {
-        mInterface = interfacer;
+        if (interfacer != null)
+            mInterface = interfacer;
+
         mBaseValues = new float[]{0.0f, 0.0f, 0.0f};
         mFilterValues = new float[]{0.0f, 0.0f, 0.0f};
 
@@ -143,6 +150,7 @@ public class ControllerObject implements SensorEventListener {
     public void registerSensor() {
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
+
     public void unregisterSensor() {
         mSensorManager.unregisterListener(this);
     }
@@ -162,11 +170,13 @@ public class ControllerObject implements SensorEventListener {
         mNetValues[Y] += mFilterValues[Y];
         mNetValues[Z] += mFilterValues[Z];
 
-        mInterface.onBaseChangedListener(mBaseValues);
-        mInterface.onFilterChangedListener(mFilterValues, mNetValues);
+        if (mInterface != null) {
+            mInterface.onBaseChangedListener(mBaseValues);
+            mInterface.onFilterChangedListener(mFilterValues, mNetValues);
 
-        if (mLeftBound!= 0 && mRightBound !=0) {
-            calculateAngle();
+            if (mLeftBound != 0 && mRightBound != 0) {
+                calculateAngle();
+            }
         }
     }
 

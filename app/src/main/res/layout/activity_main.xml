@@ -3,14 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/activity_background"
+    android:background="@color/flat_white"
     tools:context=".MainActivity">
 
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/fragment_background"/>
+        android:layout_height="match_parent"/>
 
     <Button
         android:id="@+id/back_button"
@@ -20,57 +19,40 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="@dimen/hud_background_margin"
-        android:layout_marginLeft="@dimen/vector_margin"
-        android:layout_marginStart="@dimen/vector_margin"/>
+        android:layout_margin="@dimen/margin1"/>
 
-    <View
-        android:id="@+id/hud_center"
-        android:layout_height="@dimen/hud_height"
-        android:layout_width="1dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerInParent="true"/>
+    <RelativeLayout
+        android:id="@+id/top_hud_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/top_hud_padding"
+        android:layout_margin="@dimen/margin1"
+        android:background="@color/white"
+        android:gravity="center">
 
-    <View
-        android:id="@+id/controller_indicator"
-        android:layout_width="@dimen/status_circle_size"
-        android:layout_height="@dimen/status_circle_size"
-        android:background="@drawable/status_not_connected"
-        android:layout_alignTop="@id/hud_center"
-        android:layout_marginTop="@dimen/hud_margin_dimen"
-        android:layout_toLeftOf="@id/hud_center"
-        android:layout_marginRight="@dimen/hud_margin_large"/>
+        <spring15.ec551.fpgacontroller.resources.CustomTextView
+            android:id="@+id/controller_text"
+            android:layout_height="@dimen/top_hud_item_height"
+            android:layout_width="@dimen/top_hud_item_width"
+            android:layout_marginRight="@dimen/top_hud_item_margin"
+            android:layout_marginEnd="@dimen/top_hud_item_margin"
+            android:textSize="@dimen/status_text_size"
+            android:text="@string/controller"
+            android:gravity="center" />
 
-    <spring15.ec551.fpgacontroller.resources.CustomTextView
-        android:id="@+id/controller_text"
-        android:layout_height="@dimen/hud_height"
-        android:layout_width="wrap_content"
-        android:textSize="@dimen/status_text_size"
-        android:text="@string/controller"
-        android:layout_alignTop="@id/hud_center"
-        android:layout_marginTop="@dimen/hud_margin_dimen"
-        android:layout_marginRight="@dimen/hud_margin_dimen"
-        android:layout_toLeftOf="@id/controller_indicator"/>
+        <spring15.ec551.fpgacontroller.resources.CustomTextView
+            android:id="@+id/vehicle_text"
+            android:layout_height="@dimen/top_hud_item_height"
+            android:layout_width="@dimen/top_hud_item_width"
+            android:layout_marginLeft="@dimen/top_hud_item_margin"
+            android:layout_marginStart="@dimen/top_hud_item_margin"
+            android:textSize="@dimen/status_text_size"
+            android:text="@string/vehicle"
+            android:gravity="center"
+            android:layout_toRightOf="@id/controller_text"
+            android:layout_toEndOf="@id/controller_text"/>
 
-    <View
-        android:id="@+id/vehicle_indicator"
-        android:layout_width="@dimen/status_circle_size"
-        android:layout_height="@dimen/status_circle_size"
-        android:background="@drawable/status_not_connected"
-        android:layout_alignTop="@id/hud_center"
-        android:layout_marginTop="@dimen/hud_margin_dimen"
-        android:layout_toRightOf="@id/hud_center"
-        android:layout_marginLeft="@dimen/hud_margin_large" />
 
-    <spring15.ec551.fpgacontroller.resources.CustomTextView
-        android:id="@+id/vehicle_text"
-        android:layout_height="@dimen/hud_height"
-        android:layout_width="wrap_content"
-        android:textSize="@dimen/status_text_size"
-        android:text="@string/vehicle"
-        android:layout_alignTop="@id/hud_center"
-        android:layout_marginTop="@dimen/hud_margin_dimen"
-        android:layout_toRightOf="@+id/vehicle_indicator"
-        android:layout_marginLeft="@dimen/hud_margin_dimen" />
+    </RelativeLayout>
 
 </RelativeLayout>

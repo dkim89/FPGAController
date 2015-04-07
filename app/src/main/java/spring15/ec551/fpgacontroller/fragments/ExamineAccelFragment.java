@@ -74,7 +74,9 @@ public class ExamineAccelFragment extends Fragment implements ControllerInterfac
 
         mFilterControl.setText("Filter Value\n" + String.format("%6.2f", mController.getFilterValue()));
         mAngleSensitivity.setText(String.format("Angle Precision\n" + mController.getAnglePrecision()));
-        mListener.initializeExamineAccelerometerBackButton();
+
+        mListener.exitMainMenuFragment();
+
         return view;
     }
 

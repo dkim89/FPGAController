@@ -8,14 +8,18 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 import spring15.ec551.fpgacontroller.R;
-import spring15.ec551.fpgacontroller.fragments.ControllerSettingsFragment;
+import spring15.ec551.fpgacontroller.accelerometer.ControllerObject;
+import spring15.ec551.fpgacontroller.fragments.CalibrateControllerFragment;
 import spring15.ec551.fpgacontroller.fragments.ExamineAccelFragment;
 import spring15.ec551.fpgacontroller.fragments.FragmentActionListener;
 import spring15.ec551.fpgacontroller.fragments.MenuFragment;
-import spring15.ec551.fpgacontroller.resources.UserConfigurationObject;
+import spring15.ec551.fpgacontroller.resources.CustomTextView;
 
 public class MainActivity extends ActionBarActivity implements FragmentActionListener {
 
@@ -24,10 +28,14 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
     final String EXAMINE_ACCEL_FRAGMENT = "EXAMINE_ACCEL_FRAGMENT";
     final String CONTROLLER_SETTINGS_FRAGMENT = "CONTROLLER_SETTINGS_FRAGMENT";
 
-    View mControllerIndicator;
-    View mVehicleIndicator;
-    Button mBackButton;
+    // Controller object that is used throughout the application.
+    private static ControllerObject mControllerObject;
 
+    FrameLayout mFragmentContainer;
+    RelativeLayout mTopHudContainer;
+    CustomTextView mControllerIndicator;
+    CustomTextView mVehicleIndicator;
+    Button mBackButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,14 +45,33 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
         getSupportActionBar().hide();
         setContentView(R.layout.activity_main);
 
-        mControllerIndicator = findViewById(R.id.controller_indicator);
-        mVehicleIndicator = findViewById(R.id.vehicle_indicator);
+        mFragmentContainer = (FrameLayout) findViewById(R.id.fragment_container);
+        mTopHudContainer = (RelativeLayout) findViewById(R.id.top_hud_container);
+        mControllerIndicator = (CustomTextView) findViewById(R.id.controller_text);
+        mVehicleIndicator = (CustomTextView) findViewById(R.id.vehicle_text);
         mBackButton = (Button) findViewById(R.id.back_button);
+
+        setBackButtonListener();
+        // Check for connection
+        isControllerConfigured();
+        isVehicleConnected();
+
 
         // If no fragment is visible
         if (savedInstanceState == null) {
-            initializeMenuFragment(false);
+            initializeMenuFragment();
         }
+    }
+
+    /** Initialize back button */
+    private void setBackButtonListener() {
+        mBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFragmentManager().popBackStack();
+                mBackButton.setVisibility(View.INVISIBLE);
+            }
+        });
     }
 
     /** Listener for MenuFragment ListView */
@@ -52,43 +79,48 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
     public void onSettingsMenuItemClickListener(String itemName) {
         if (itemName.equals(MenuFragment.EXAMINE_ACCEL))
             initializeExamineAccelFragment();
-        else if (itemName.equals(MenuFragment.CONTROLLER_SETTINGS)) {
+        else if (itemName.equals(MenuFragment.CALIBRATE_CONTROLLER)) {
             initializeControllerSettingsFragment();
         }
     }
 
     /** MenuFragment Transactions */
-    private void initializeMenuFragment(boolean backstack) {
-        if (!backstack) {
-            MenuFragment menuFragment = MenuFragment.newInstance();
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
-            transaction.add(R.id.fragment_container, menuFragment, MENU_FRAGMENT);
-            transaction.commit();
-        }
-        // Menu Fragment doesn't have a back button
-        mBackButton.setVisibility(View.INVISIBLE);
+    private void initializeMenuFragment() {
+        MenuFragment menuFragment = MenuFragment.newInstance();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, menuFragment, MENU_FRAGMENT);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
     /** ExamineAccelFragment initializer */
     public void initializeExamineAccelFragment() {
-        if (getFragmentManager().findFragmentByTag(EXAMINE_ACCEL_FRAGMENT) == null) {
-            ExamineAccelFragment examineAccelFragment = ExamineAccelFragment.newInstance();
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
-            transaction.replace(R.id.fragment_container, examineAccelFragment, EXAMINE_ACCEL_FRAGMENT);
-            transaction.addToBackStack(EXAMINE_ACCEL_FRAGMENT);
-            transaction.commit();
-        }
+        ExamineAccelFragment examineAccelFragment = ExamineAccelFragment.newInstance();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, examineAccelFragment, EXAMINE_ACCEL_FRAGMENT);
+        transaction.addToBackStack(EXAMINE_ACCEL_FRAGMENT);
+        transaction.commit();
     }
 
     /** ControllerSettingsFragment initializer */
     private void initializeControllerSettingsFragment() {
-        if (getFragmentManager().findFragmentByTag(CONTROLLER_SETTINGS_FRAGMENT) == null) {
-            ControllerSettingsFragment controllerSettingsFragment = ControllerSettingsFragment.newInstance(null);
-            FragmentTransaction transation = getFragmentManager().beginTransaction();
-            transation.replace(R.id.fragment_container, controllerSettingsFragment, CONTROLLER_SETTINGS_FRAGMENT);
-            transation.addToBackStack(CONTROLLER_SETTINGS_FRAGMENT);
-            transation.commit();
-        }
+        CalibrateControllerFragment calibrateControllerFragment = CalibrateControllerFragment.newInstance(null);
+        FragmentTransaction transation = getFragmentManager().beginTransaction();
+        transation.replace(R.id.fragment_container, calibrateControllerFragment, CONTROLLER_SETTINGS_FRAGMENT);
+        transation.addToBackStack(CONTROLLER_SETTINGS_FRAGMENT);
+        transation.commit();
+    }
+
+    @Override
+    public void enterMainMenuFragment() {
+        mBackButton.setVisibility(View.INVISIBLE);
+        mTopHudContainer.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void exitMainMenuFragment() {
+        mBackButton.setVisibility(View.VISIBLE);
+        mTopHudContainer.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -108,33 +140,36 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
         return super.onOptionsItemSelected(item);
     }
 
-    /** Sets the onClickListener back button for ExamineAccelFragment */
+    /** When invoked, it will assign the saved controller object to activity controller.
+     *  isControllerConfigured is invoked after to update status.
+     * @param savedControllerObject The saved object value.
+     */
     @Override
-    public void initializeExamineAccelerometerBackButton() {
-        mBackButton.setVisibility(View.VISIBLE);
-        mBackButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getFragmentManager().popBackStack();
-                mBackButton.setVisibility(View.INVISIBLE);
-            }
-        });
+    public void onSaveControllerConfiguration(ControllerObject savedControllerObject) {
+        if (savedControllerObject != null)
+            mControllerObject = savedControllerObject;
+
+        isControllerConfigured();
     }
 
-    @Override
-    public void initializeControllerSettingsBackButton() {
-        mBackButton.setVisibility(View.VISIBLE);
-        mBackButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getFragmentManager().popBackStack();
-                mBackButton.setVisibility(View.INVISIBLE);
-            }
-        });
+    /** Checks for the status of controller (connection).  Will update color status
+     *  and can also be used to directly get a boolean value of status
+     * @return true if object contains a value.
+     */
+    public boolean isControllerConfigured() {
+        if (mControllerObject != null) {
+            mControllerIndicator.setBackgroundResource(R.color.flat_green1);
+            return true;
+        } else {
+            mControllerIndicator.setBackgroundResource(R.color.flat_red2);
+            return false;
+        }
     }
 
-    @Override
-    public void onConfigurationSettingsImplemented(UserConfigurationObject userConfig) {
-        // TODO
+    // TODO Change color when connected
+    public boolean isVehicleConnected() {
+        mVehicleIndicator.setBackgroundResource(R.color.flat_red2);
+        return false;
     }
+
 }

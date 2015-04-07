@@ -7,7 +7,6 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 
 import spring15.ec551.fpgacontroller.R;
@@ -19,22 +18,15 @@ import spring15.ec551.fpgacontroller.resources.UserConfigurationObject;
 /**
  * Created by davidkim on 3/28/15.
  */
-public class ControllerSettingsFragment extends Fragment implements ControllerInterfaceListener{
-    private final int X = 0;
-    private final int Y = 1;
-    private final int Z = 2;
-
-    private final String MEASURE_BASE = "MEASURE_BASE";
-    private final String MEASURE_LEFT = "MEASURE_LEFT";
-    private final String MEASURE_RIGHT = "MEASURE_RIGHT";
+public class CalibrateControllerFragment extends Fragment implements ControllerInterfaceListener{
 
     Context mContext;
     private FragmentActionListener mListener;
 
-    Button mResetCalibration;
-    CustomTextView mInstructionText, mNotificationText, mCalibrationButton;
+    CustomTextView mInstructionText, mNotificationText, mCalibrationButton, mSaveButton;
     ImageView mBaseLine;
     ImageView mDeviceImage;
+    ImageView mExampleImage;
 
     float mFilteredValues[];
     float mNetValues[];
@@ -45,15 +37,15 @@ public class ControllerSettingsFragment extends Fragment implements ControllerIn
     private ControllerObject mController;
     UserConfigurationObject mConfigObject = null;
 
-    public static ControllerSettingsFragment newInstance(UserConfigurationObject object) {
-        ControllerSettingsFragment fragment = new ControllerSettingsFragment();
+    public static CalibrateControllerFragment newInstance(UserConfigurationObject object) {
+        CalibrateControllerFragment fragment = new CalibrateControllerFragment();
         Bundle args = new Bundle();
         args.putParcelable(UserConfigurationObject.USER_SAVED_CONFIG, object);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public ControllerSettingsFragment() {
+    public CalibrateControllerFragment() {
     }
 
     @Override
@@ -78,7 +70,7 @@ public class ControllerSettingsFragment extends Fragment implements ControllerIn
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_controller_settings, container, false);
+        View view = inflater.inflate(R.layout.layout_config_controller, container, false);
 
         mInstructionText = (CustomTextView) view.findViewById(R.id.controller_instruc_textview);
         mNotificationText = (CustomTextView) view.findViewById(R.id.controller_notify_textview);
@@ -86,7 +78,7 @@ public class ControllerSettingsFragment extends Fragment implements ControllerIn
         mDeviceImage = (ImageView) view.findViewById(R.id.device_image);
         mCalibrationButton = (CustomTextView) view.findViewById(R.id.controller_button);
 
-        mListener.initializeControllerSettingsBackButton();
+        mListener.exitMainMenuFragment();
 
         /* If configured, display current settings; otherwise initialize config procedure */
         if (mConfigObject == null) {
@@ -179,9 +171,6 @@ public class ControllerSettingsFragment extends Fragment implements ControllerIn
 
     }
 
-
-
-
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -212,7 +201,7 @@ public class ControllerSettingsFragment extends Fragment implements ControllerIn
 
     @Override
     public void onBaseChangedListener(float[] baseValues) {
-
+        // Not relevant for this fragment as we only need net value
     }
 
     @Override
