@@ -33,7 +33,7 @@ public class FixedWidthTextView extends TextView{
         super(context, attrs);
         mTypeface = Typeface.createFromAsset(context.getAssets(), "inconsolata/inconsolata_regular.otf");
         this.setTypeface(mTypeface);
-        this.setTextColor(getResources().getColor(R.color.silver));
+        this.setTextColor(getResources().getColor(R.color.flat_white));
     }
 
     @Override

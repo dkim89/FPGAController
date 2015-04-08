@@ -93,13 +93,13 @@
             android:id="@+id/kfilter_up_arrow_button"
             android:layout_width="@dimen/button_size"
             android:layout_height="@dimen/button_size"
-            android:background="@drawable/up_arrow_selector"
+            android:background="@drawable/button_up_selector"
             android:layout_marginBottom="@dimen/vector_margin"/>
         <Button
             android:id="@+id/kfilter_down_arrow_button"
             android:layout_width="@dimen/button_size"
             android:layout_height="@dimen/button_size"
-            android:background="@drawable/down_arrow_selector" />
+            android:background="@drawable/button_down_selector" />
     </LinearLayout>
 
     <LinearLayout
@@ -124,14 +124,14 @@
             android:id="@+id/angle_up_arrow_button"
             android:layout_width="@dimen/button_size"
             android:layout_height="@dimen/button_size"
-            android:background="@drawable/up_arrow_selector"
+            android:background="@drawable/button_up_selector"
             android:layout_marginBottom="@dimen/vector_margin"/>
 
         <Button
             android:id="@+id/angle_down_arrow_button"
             android:layout_width="@dimen/button_size"
             android:layout_height="@dimen/button_size"
-            android:background="@drawable/down_arrow_selector" />
+            android:background="@drawable/button_down_selector" />
     </LinearLayout>
 
 

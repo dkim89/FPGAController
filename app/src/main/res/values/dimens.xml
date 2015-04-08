@@ -25,7 +25,7 @@
     <dimen name="status_text_size">20sp</dimen>
     <dimen name="status_margin">15dp</dimen>
 
-    <dimen name="back_button_size">50dp</dimen>
+    <dimen name="back_button_size">60dp</dimen>
 
     <dimen name="vector_margin_first">100dp</dimen>
     <dimen name="vector_margin">20dp</dimen>
