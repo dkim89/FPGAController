@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/flat_white"
+    android:background="@color/flat_dark_grey1"
     tools:context=".MainActivity">
 
     <FrameLayout
@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:padding="@dimen/top_hud_padding"
         android:layout_margin="@dimen/margin1"
-        android:background="@color/white"
+        android:background="@color/flat_dark_grey1"
         android:gravity="center">
 
         <spring15.ec551.fpgacontroller.resources.CustomTextView

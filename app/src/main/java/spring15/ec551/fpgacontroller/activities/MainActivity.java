@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
@@ -29,7 +28,7 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
     final String CONTROLLER_SETTINGS_FRAGMENT = "CONTROLLER_SETTINGS_FRAGMENT";
 
     // Controller object that is used throughout the application.
-    private static ControllerObject mControllerObject;
+    private ControllerObject mControllerObject;
 
     FrameLayout mFragmentContainer;
     RelativeLayout mTopHudContainer;
@@ -104,7 +103,9 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
 
     /** ControllerSettingsFragment initializer */
     private void initializeControllerSettingsFragment() {
-        CalibrateControllerFragment calibrateControllerFragment = CalibrateControllerFragment.newInstance(null);
+//        if (mControllerObject != null)
+        CalibrateControllerFragment calibrateControllerFragment = CalibrateControllerFragment.newInstance(mControllerObject);
+
         FragmentTransaction transation = getFragmentManager().beginTransaction();
         transation.replace(R.id.fragment_container, calibrateControllerFragment, CONTROLLER_SETTINGS_FRAGMENT);
         transation.addToBackStack(CONTROLLER_SETTINGS_FRAGMENT);
@@ -142,12 +143,11 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
 
     /** When invoked, it will assign the saved controller object to activity controller.
      *  isControllerConfigured is invoked after to update status.
-     * @param savedControllerObject The saved object value.
+     * @param savedController The saved object value.
      */
     @Override
-    public void onSaveControllerConfiguration(ControllerObject savedControllerObject) {
-        if (savedControllerObject != null)
-            mControllerObject = savedControllerObject;
+    public void onSaveControllerConfiguration(ControllerObject savedController) {
+        mControllerObject = savedController;
 
         isControllerConfigured();
     }
@@ -158,7 +158,7 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
      */
     public boolean isControllerConfigured() {
         if (mControllerObject != null) {
-            mControllerIndicator.setBackgroundResource(R.color.flat_green1);
+            mControllerIndicator.setBackgroundResource(R.color.flat_green2);
             return true;
         } else {
             mControllerIndicator.setBackgroundResource(R.color.flat_red2);

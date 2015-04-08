@@ -1,6 +1,5 @@
 package spring15.ec551.fpgacontroller.accelerometer;
 
-import spring15.ec551.fpgacontroller.resources.UserConfigurationObject;
 
 /**
  * Created by davidkim on 3/26/15.
@@ -27,10 +26,6 @@ public class AccelerometerHighPassFilter {
         kFilteringFactor = factor;
     }
 
-    public AccelerometerHighPassFilter(UserConfigurationObject mConfigObject) {
-//        setConfiguration(mConfigObject);
-    }
-
     /** Will apply the filter, then send the values back to the object listening for it */
     public float[] getFilteredAccelerometerValues(float accelX, float accelY, float accelZ) {
         mPrevAccel[X] = accelX * kFilteringFactor + mPrevAccel[X] * (MAX_FLOAT - kFilteringFactor);
@@ -46,10 +41,6 @@ public class AccelerometerHighPassFilter {
 
     /** Default configuration settings for the controller */
     public void setDefaultConfiguration() {
-        // TODO
-    }
-
-    private void setConfiguration(UserConfigurationObject mConfigObject) {
         // TODO
     }
 

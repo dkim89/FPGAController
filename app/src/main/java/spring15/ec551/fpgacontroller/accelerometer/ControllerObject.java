@@ -5,9 +5,9 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
-
-import spring15.ec551.fpgacontroller.resources.UserConfigurationObject;
 
 /**
  * Created by davidkim on 3/26/15.
@@ -16,28 +16,34 @@ import spring15.ec551.fpgacontroller.resources.UserConfigurationObject;
  * It will output base, filtered, and net values.  In addition, it will output angle degrees
  * using a precision value.  It will also be able to save and load configurations.
  */
-public class ControllerObject implements SensorEventListener {
+public class ControllerObject implements SensorEventListener, Parcelable {
     final int X = 0;
     final int Y = 1;
     final int Z = 2;
+
+    // Default values used for this app
+    final float DEFAULT_K_FACTOR = 0.65f;
+    final int DEFAULT_BOUND = 5;
+    final float ZERO_FLOAT = 0.0f;
+
+    // Threshold for kFactor Limit (only used for examine accelerometer fragment)
+    final float KFACTOR_LIMIT = 1.0f;
+    final float KFACTOR_INCREMENT = 0.05f;
 
     // Sensor Objects
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
 
-    /** The filter used to remove the pesky noise */
+    /** Filter implementation */
     private AccelerometerHighPassFilter mFilter;
-    final float KFACTOR_LIMIT = 1.0f;
-    final float KFACTOR_INCREMENT = 0.05f;
+
+    /** Interface that outputs XYZ data from sensor */
     public ControllerInterfaceListener mInterface;
 
-
-    /** The filtered accelerometer values from AccelerometerHighPassFilter */
+    /** The accelerometer values from AccelerometerHighPassFilter */
     float mBaseValues[];
     float mFilterValues[];
     float mNetValues[];
-
-    final float ZERO_FLOAT = 0.0f;
 
     /** Used to calculate the angle **/
     float mAnglePrecision;
@@ -46,6 +52,7 @@ public class ControllerObject implements SensorEventListener {
     final float ANGLE_SENSITIVITY_HIGH_LIMIT = 10.0f;
     final float ANGLE_INCREMENT = 0.5f;
 
+    public ControllerObject() {};
     /** Implements an empty controller object for activity level. This should not
      *  initially be set to listen to anything */
     public ControllerObject(Context context) {
@@ -57,28 +64,25 @@ public class ControllerObject implements SensorEventListener {
        this(context,interfacer, null);
     }
 
-
     public ControllerObject(Context context, ControllerInterfaceListener interfacer,
-                            UserConfigurationObject object) {
+                            ControllerObject object) {
         if (interfacer != null)
             mInterface = interfacer;
 
-        mBaseValues = new float[]{0.0f, 0.0f, 0.0f};
-        mFilterValues = new float[]{0.0f, 0.0f, 0.0f};
+        mBaseValues = new float[]{ZERO_FLOAT, ZERO_FLOAT, ZERO_FLOAT};
+        mFilterValues = new float[]{ZERO_FLOAT, ZERO_FLOAT, ZERO_FLOAT};
 
-        /* Either initialize default values or user config values */
+        /** Initialize object with default values */
         if (object == null) {
-            mNetValues = new float[]{0.0f, 0.0f, 0.0f};
-            mLeftBound = 5;
-            mRightBound = 5;
+            mNetValues = new float[]{ZERO_FLOAT, ZERO_FLOAT, ZERO_FLOAT};
+            mLeftBound = DEFAULT_BOUND;
+            mRightBound = DEFAULT_BOUND;
             mAnglePrecision = 1.0f;
-            mFilter = new AccelerometerHighPassFilter(0.65f);
-        } else {
-            mNetValues = object.getNetValues();
-            mLeftBound = object.getLeftBound();
-            mRightBound = object.getRightBound();
-            mAnglePrecision = object.getAngleSensitivty();
-            mFilter = new AccelerometerHighPassFilter(object.getKFactor());
+            mFilter = new AccelerometerHighPassFilter(DEFAULT_K_FACTOR);
+        }
+        /** Initialize with saved controller object */
+        else {
+            setSavedSettings(object);
         }
 
         mSensorManager = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
@@ -89,70 +93,39 @@ public class ControllerObject implements SensorEventListener {
 
     }
 
-    public float getFilterValue() {
-        return mFilter.kFilteringFactor;
+    public void setSavedSettings(ControllerObject object) {
+        mNetValues = object.getNetValue();
+        mLeftBound = object.getLeftBound();
+        mRightBound = object.getRightBound();
+        mAnglePrecision = object.getAnglePrecision();
+        mFilter = new AccelerometerHighPassFilter(DEFAULT_K_FACTOR);
     }
 
-    public void increaseFilterValue() {
-        if (mFilter.kFilteringFactor < KFACTOR_LIMIT) {
-            if (mFilter.kFilteringFactor > KFACTOR_LIMIT - KFACTOR_INCREMENT) {
-                mFilter.kFilteringFactor = KFACTOR_LIMIT;
-            } else {
-                mFilter.kFilteringFactor += KFACTOR_INCREMENT;
-            }
-        }
-    }
+    /** Getters */
+    public float    getFilterValue()    { return this.mFilter.kFilteringFactor; }
+    public float[]  getNetValue()       { return this.mNetValues; }
+    public int      getLeftBound()      { return this.mLeftBound; }
+    public int      getRightBound()     { return this.mRightBound; }
+    public float    getAnglePrecision() { return this.mAnglePrecision; }
 
-    public void decreaseFilterValue() {
-        if (mFilter.kFilteringFactor > ZERO_FLOAT) {
-            if (mFilter.kFilteringFactor < ZERO_FLOAT + KFACTOR_INCREMENT) {
-                mFilter.kFilteringFactor = ZERO_FLOAT;
-            } else {
-                mFilter.kFilteringFactor -= KFACTOR_INCREMENT;
-            }
-        }
-    }
-
-    public float getAnglePrecision() {
-        return mAnglePrecision;
-    }
-
-    public void setAnglePrecision(float precision) {
-        mAnglePrecision = precision;
-    }
-
-    public void increaseAngleSensitivity() {
-        if (mAnglePrecision < ANGLE_SENSITIVITY_HIGH_LIMIT) {
-            if (mAnglePrecision > ANGLE_SENSITIVITY_HIGH_LIMIT - ANGLE_INCREMENT) {
-                mAnglePrecision = ANGLE_SENSITIVITY_HIGH_LIMIT;
-            } else {
-                mAnglePrecision += ANGLE_INCREMENT;
-            }
-        }
-    }
-
-    public void decreaseAngleSensitivity() {
-        if (mAnglePrecision > ZERO_FLOAT) {
-            if (mAnglePrecision < ZERO_FLOAT + ANGLE_INCREMENT) {
-                mAnglePrecision = ZERO_FLOAT;
-            } else {
-                mAnglePrecision -= ANGLE_INCREMENT;
-            }
-        }
-    }
-
+    /** Used to set the starting net baseline */
     public void resetNetValues() {
         mNetValues[X] = ZERO_FLOAT;
         mNetValues[Y] = ZERO_FLOAT;
         mNetValues[Z] = ZERO_FLOAT;
     }
 
+    /** Attach and detach sensor */
     public void registerSensor() {
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
-
     public void unregisterSensor() {
         mSensorManager.unregisterListener(this);
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        Log.d("ACCURACYCHANGED: ", "Integer: " + accuracy);
     }
 
     @Override
@@ -180,19 +153,6 @@ public class ControllerObject implements SensorEventListener {
         }
     }
 
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        Log.d("ACCURACYCHANGED: ", "Integer: " + accuracy);
-    }
-
-    public void setLeftBound(int[] leftBound) {
-        this.mLeftBound = Math.abs(leftBound[0]) + Math.abs(leftBound[1]);
-    }
-
-    public void setRightRound(int[] rightRound) {
-        this.mRightBound = Math.abs(rightRound[0]) + Math.abs(rightRound[1]);
-    }
-
     /** Calculates the angle value */
     public void calculateAngle() {
         float xySum = (Math.abs(mNetValues[X]) + Math.abs(mNetValues[Y])) / 2;
@@ -214,5 +174,82 @@ public class ControllerObject implements SensorEventListener {
         }
     }
 
+    /** The following methods are used for examine accelerometer only
+     *  (not in configure and vehicle control) */
+    public void increaseFilterValue() {
+        if (mFilter.kFilteringFactor < KFACTOR_LIMIT) {
+            if (mFilter.kFilteringFactor > KFACTOR_LIMIT - KFACTOR_INCREMENT) {
+                mFilter.kFilteringFactor = KFACTOR_LIMIT;
+            } else {
+                mFilter.kFilteringFactor += KFACTOR_INCREMENT;
+            }
+        }
+    }
+    public void decreaseFilterValue() {
+        if (mFilter.kFilteringFactor > ZERO_FLOAT) {
+            if (mFilter.kFilteringFactor < ZERO_FLOAT + KFACTOR_INCREMENT) {
+                mFilter.kFilteringFactor = ZERO_FLOAT;
+            } else {
+                mFilter.kFilteringFactor -= KFACTOR_INCREMENT;
+            }
+        }
+    }
+    public void setAnglePrecision(float precision) {
+        mAnglePrecision = precision;
+    }
+    public void increaseAngleSensitivity() {
+        if (mAnglePrecision < ANGLE_SENSITIVITY_HIGH_LIMIT) {
+            if (mAnglePrecision > ANGLE_SENSITIVITY_HIGH_LIMIT - ANGLE_INCREMENT) {
+                mAnglePrecision = ANGLE_SENSITIVITY_HIGH_LIMIT;
+            } else {
+                mAnglePrecision += ANGLE_INCREMENT;
+            }
+        }
+    }
+    public void decreaseAngleSensitivity() {
+        if (mAnglePrecision > ZERO_FLOAT) {
+            if (mAnglePrecision < ZERO_FLOAT + ANGLE_INCREMENT) {
+                mAnglePrecision = ZERO_FLOAT;
+            } else {
+                mAnglePrecision -= ANGLE_INCREMENT;
+            }
+        }
+    }
+    /********************************************************************************************/
+
+    /** Parcelable implementation */
+    protected ControllerObject(Parcel in) {
+        mNetValues = new float[3];
+        in.readFloatArray(mNetValues);
+        mAnglePrecision = in.readFloat();
+        mLeftBound = in.readInt();
+        mRightBound = in.readInt();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeFloatArray(mNetValues);
+        dest.writeFloat(mAnglePrecision);
+        dest.writeInt(mLeftBound);
+        dest.writeInt(mRightBound);
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<ControllerObject> CREATOR = new Parcelable.Creator<ControllerObject>() {
+        @Override
+        public ControllerObject createFromParcel(Parcel in) {
+            return new ControllerObject(in);
+        }
+
+        @Override
+        public ControllerObject[] newArray(int size) {
+            return new ControllerObject[size];
+        }
+    };
 }
 

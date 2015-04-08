@@ -8,14 +8,16 @@
 
 
     <color name="transparent">#00FFFFFF</color>
-    <color name="flat_black">#1D1D1D</color>
+    <!--<color name="flat_black">#1D1D1D</color>-->
     <color name="flat_white">#ECF0F1</color>
     <color name="flat_gray">#BDC3C7</color>
-    <color name="flat_blue_1">#3498DB</color>
-    <color name="flat_blue_2">#2980B9</color>
+    <color name="flat_blue1">#3498DB</color>
+    <color name="flat_blue2">#2980B9</color>
 
-    <color name="flat_red1">#E74C3C</color>
-    <color name="flat_red2">#C0392B</color>
+    <color name="flat_dark_grey1">#5C97BF</color>
+    <color name="flat_dark_grey2">#424242</color>
+
+    <color name="flat_red2">#E26A6A</color>
     <color name="flat_green1">#2ECC71</color>
     <color name="flat_green2">#27AE60</color>
     <color name="reset_color">#ECF0F1</color>

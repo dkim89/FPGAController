@@ -43,7 +43,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:lines="1"
-        android:textSize="@dimen/controller_text2"/>
+        android:textSize="@dimen/controller_text3"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -65,7 +65,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/reset"
-            android:textSize="@dimen/controller_text2"
+            android:textSize="@dimen/controller_text3"
             android:layout_gravity="bottom"
             android:layout_marginLeft="@dimen/vector_margin"/>
     </LinearLayout>

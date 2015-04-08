@@ -3,7 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="@dimen/menu_list_item_height"
-    android:background="@color/menu_item_background">
+    android:background="@drawable/button_blue_selector">
 
     <spring15.ec551.fpgacontroller.resources.CustomTextView
         android:id="@+id/custom_text_view"

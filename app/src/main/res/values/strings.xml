@@ -8,4 +8,5 @@
     <string name="reset">RESET NET VALUES</string>
     <string name="instruction">INSTRUCTION HERE</string>
     <string name="notify">NOTIFICATION HERE</string>
+    <string name="angle">00</string>
 </resources>

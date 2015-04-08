@@ -12,8 +12,8 @@ public interface FragmentActionListener {
 
     // TODO
     /** Sends the controller object to activity level and check for validity.
-     * @param userConfig the data object containing saved configuration. */
-    public void onSaveControllerConfiguration(ControllerObject userConfig);
+     * @param savedSettings the data object containing saved configuration. */
+    public void onSaveControllerConfiguration(ControllerObject savedSettings);
 
     public void enterMainMenuFragment();
 
