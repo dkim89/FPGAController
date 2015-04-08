@@ -39,9 +39,4 @@ public class AccelerometerHighPassFilter {
         return new float[] {mAccel[X], mAccel[Y], mAccel[Z]};
     }
 
-    /** Default configuration settings for the controller */
-    public void setDefaultConfiguration() {
-        // TODO
-    }
-
 }

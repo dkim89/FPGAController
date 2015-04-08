@@ -1,7 +1,5 @@
 package spring15.ec551.fpgacontroller.fragments;
 
-import spring15.ec551.fpgacontroller.accelerometer.ControllerObject;
-
 /**
  * Created by davidkim on 3/25/15.
  */
@@ -10,10 +8,8 @@ public interface FragmentActionListener {
      * @param itemName the string value associated with the settings item */
     public void onSettingsMenuItemClickListener(String itemName);
 
-    // TODO
-    /** Sends the controller object to activity level and check for validity.
-     * @param savedSettings the data object containing saved configuration. */
-    public void onSaveControllerConfiguration(ControllerObject savedSettings);
+    /** Invoke an update to saved configuration state of controller */
+    public void updateControllerSavedStateDisplay();
 
     public void enterMainMenuFragment();
 

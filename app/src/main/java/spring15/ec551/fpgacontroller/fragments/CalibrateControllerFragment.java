@@ -8,10 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-
 import spring15.ec551.fpgacontroller.R;
 import spring15.ec551.fpgacontroller.accelerometer.ControllerInterfaceListener;
-import spring15.ec551.fpgacontroller.accelerometer.ControllerObject;
 import spring15.ec551.fpgacontroller.activities.MainActivity;
 import spring15.ec551.fpgacontroller.resources.CustomTextView;
 
@@ -19,8 +17,6 @@ import spring15.ec551.fpgacontroller.resources.CustomTextView;
  * Created by davidkim on 3/28/15.
  */
 public class CalibrateControllerFragment extends Fragment implements ControllerInterfaceListener{
-
-    static String SAVED_CONTROLLER = "SAVED_CONTROLLER";
 
     Context mContext;
     private FragmentActionListener mListener;
@@ -30,21 +26,9 @@ public class CalibrateControllerFragment extends Fragment implements ControllerI
     ImageView mDeviceImage;
     ImageView mExampleImage;
 
-    float mFilteredValues[];
-    float mNetValues[];
+    public static CalibrateControllerFragment newInstance() {
+        return new CalibrateControllerFragment();
 
-    private ControllerObject mController;
-
-    public static CalibrateControllerFragment newInstance(ControllerObject object) {
-        CalibrateControllerFragment fragment = new CalibrateControllerFragment();
-
-        if (object != null) {
-            Bundle args = new Bundle();
-            args.putParcelable(SAVED_CONTROLLER, object);
-            fragment.setArguments(args);
-        }
-
-        return fragment;
     }
 
     public CalibrateControllerFragment() {
@@ -53,15 +37,9 @@ public class CalibrateControllerFragment extends Fragment implements ControllerI
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mFilteredValues = new float[3];
-        mNetValues = new float[3];
 
-        if (getArguments() != null) {
-            ControllerObject temp = getArguments().getParcelable(SAVED_CONTROLLER);
-            mController = new ControllerObject(mContext, this, temp);
-        } else {
-            mController = new ControllerObject(mContext, this);
-        }
+        MainActivity.mControllerObject.setInterface(this);
+
     }
 
     @Override
@@ -74,6 +52,7 @@ public class CalibrateControllerFragment extends Fragment implements ControllerI
         mAngleNum = (CustomTextView) view.findViewById(R.id.rotation_angle_num);
         mBaseLine = (ImageView) view.findViewById(R.id.controller_instruc_baseline);
         mDeviceImage = (ImageView) view.findViewById(R.id.device_image);
+        mDeviceImage.setRotation(0.0f);
         mConfigButtonLeft = (CustomTextView) view.findViewById(R.id.config_button_left);
         mConfigButtonRight = (CustomTextView) view.findViewById(R.id.config_button_right);
         mExampleImage = (ImageView) view.findViewById(R.id.example_image);
@@ -81,7 +60,7 @@ public class CalibrateControllerFragment extends Fragment implements ControllerI
         mListener.exitMainMenuFragment();
 
         /* If configured, display current settings; otherwise initialize config procedure */
-        if (((MainActivity) getActivity()).isControllerConfigured()) {
+        if (MainActivity.mControllerObject.getConfiguredState()) {
             completeConfiguration();
         } else {
             beginConfiguration();
@@ -93,18 +72,20 @@ public class CalibrateControllerFragment extends Fragment implements ControllerI
     /* Begin Configuration */
     private void beginConfiguration() {
         mExampleImage.setVisibility(View.VISIBLE);
-        mDeviceImage.setVisibility(View.GONE);
+        mDeviceImage.setVisibility(View.INVISIBLE);
         mAngleNum.setVisibility(View.INVISIBLE);
+        mConfigButtonLeft.setVisibility(View.VISIBLE);
+        mConfigButtonRight.setVisibility(View.GONE);
 
         mInstructionText.setText("Please position your device as shown in the picture.\n" +
                 "The screen should be facing you flat with the device in landscape position.");
         mNotificationText.setText("Once in position, press \"Begin\".");
-        mConfigButtonRight.setVisibility(View.GONE);
-        mConfigButtonLeft.setVisibility(View.VISIBLE);
         mConfigButtonLeft.setText("Begin");
+
         mConfigButtonLeft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                MainActivity.mControllerObject.resetNetValues();
                 inConfiguration();
             }
         });
@@ -112,21 +93,23 @@ public class CalibrateControllerFragment extends Fragment implements ControllerI
 
     /* In Configuration */
     private void inConfiguration() {
-        mExampleImage.setVisibility(View.GONE);
+        mExampleImage.setVisibility(View.INVISIBLE);
         mDeviceImage.setVisibility(View.VISIBLE);
-        mController.resetNetValues();
         mAngleNum.setVisibility(View.VISIBLE);
+        mConfigButtonRight.setBackgroundResource(R.drawable.button_blue_selector);
+        mConfigButtonRight.setVisibility(View.VISIBLE);
+
         mConfigButtonLeft.setText("Save");
         mConfigButtonRight.setText("Retry");
-        mConfigButtonRight.setBackgroundResource(R.drawable.button_red_selector);
-        mConfigButtonRight.setVisibility(View.VISIBLE);
-        mInstructionText.setText("Check if the device image is rotating correctly with your device. ");
+        mInstructionText.setText("Check if the device image is aligned correctly with your device.");
         mNotificationText.setText("If correct, press \"Save\". To try again press \"Retry\".");
 
         // Save
         mConfigButtonLeft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                MainActivity.mControllerObject.setConfiguredState(true);
+                mListener.updateControllerSavedStateDisplay();
                 completeConfiguration();
             }
         });
@@ -135,19 +118,19 @@ public class CalibrateControllerFragment extends Fragment implements ControllerI
         mConfigButtonRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mController.resetNetValues();
+                MainActivity.mControllerObject.resetNetValues();
             }
         });
     }
 
     public void completeConfiguration() {
-        if (mDeviceImage.getVisibility() != View.VISIBLE) mDeviceImage.setVisibility(View.VISIBLE);
-        if (mExampleImage.getVisibility() == View.VISIBLE) mExampleImage.setVisibility(View.INVISIBLE);
-        if (mAngleNum.getVisibility() != View.VISIBLE) mAngleNum.setVisibility(View.VISIBLE);
-
-        mListener.onSaveControllerConfiguration(mController);
-        mConfigButtonRight.setText("Redo");
+        mDeviceImage.setVisibility(View.VISIBLE);
+        mExampleImage.setVisibility(View.INVISIBLE);
+        mAngleNum.setVisibility(View.VISIBLE);
         mConfigButtonLeft.setVisibility(View.GONE);
+        mConfigButtonRight.setBackgroundResource(R.drawable.button_red_selector);
+
+        mConfigButtonRight.setText("Redo");
         mInstructionText.setText("Device has been configured.");
         mNotificationText.setText("To start over from beginning, press \"Redo\". Otherwise return to menu.");
 
@@ -155,7 +138,9 @@ public class CalibrateControllerFragment extends Fragment implements ControllerI
         mConfigButtonRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onSaveControllerConfiguration(null);
+                MainActivity.mControllerObject.setDefaultSettings();
+                MainActivity.mControllerObject.setConfiguredState(false);
+                mListener.updateControllerSavedStateDisplay();
                 beginConfiguration();
             }
         });
@@ -171,34 +156,29 @@ public class CalibrateControllerFragment extends Fragment implements ControllerI
     @Override
     public void onStart() {
         super.onStart();
-        if (mController != null) {
-            mController.registerSensor();
-        }
+        if (MainActivity.mControllerObject != null)
+            MainActivity.mControllerObject.registerSensor();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        if (mController != null)
-            mController.unregisterSensor();
+        if (MainActivity.mControllerObject != null)
+            MainActivity.mControllerObject.unregisterSensor();
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
-        // TODO save values of user config object
     }
 
     @Override
     public void onBaseChangedListener(float[] baseValues) {
-        // Not relevant for this fragment as we only need net value
     }
 
     @Override
     public void onFilterChangedListener(float[] filterValues, float[] netValues) {
-        mFilteredValues = filterValues;
-        mNetValues = netValues;
     }
 
     @Override
@@ -206,10 +186,11 @@ public class CalibrateControllerFragment extends Fragment implements ControllerI
         mDeviceImage.setRotation(angleValue);
         mAngleNum.setText("" + angleValue);
     }
+}
 
+    /*
     private void measureValue(String tag, boolean retry) {
-//        mConfigButtonLeft.setVisibility(View.INVISIBLE);
-        /**
+        mConfigButtonLeft.setVisibility(View.INVISIBLE);
          mTimerCheck = true;
          boolean isSuccessful = true;
 
@@ -263,7 +244,5 @@ public class CalibrateControllerFragment extends Fragment implements ControllerI
          completeConfiguration();
          break;
          }
-         /* Runs a time elapsed check of filtered X,Y values. Filtered values should be between -.5 to .5. */
 
-    }
-}
+    } */

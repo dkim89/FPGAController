@@ -28,7 +28,7 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
     final String CONTROLLER_SETTINGS_FRAGMENT = "CONTROLLER_SETTINGS_FRAGMENT";
 
     // Controller object that is used throughout the application.
-    private ControllerObject mControllerObject;
+    public static ControllerObject mControllerObject;
 
     FrameLayout mFragmentContainer;
     RelativeLayout mTopHudContainer;
@@ -44,6 +44,9 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
         getSupportActionBar().hide();
         setContentView(R.layout.activity_main);
 
+        // Initialize the controller object
+        mControllerObject = new ControllerObject(getBaseContext());
+
         mFragmentContainer = (FrameLayout) findViewById(R.id.fragment_container);
         mTopHudContainer = (RelativeLayout) findViewById(R.id.top_hud_container);
         mControllerIndicator = (CustomTextView) findViewById(R.id.controller_text);
@@ -54,7 +57,6 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
         // Check for connection
         isControllerConfigured();
         isVehicleConnected();
-
 
         // If no fragment is visible
         if (savedInstanceState == null) {
@@ -103,9 +105,7 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
 
     /** ControllerSettingsFragment initializer */
     private void initializeControllerSettingsFragment() {
-//        if (mControllerObject != null)
-        CalibrateControllerFragment calibrateControllerFragment = CalibrateControllerFragment.newInstance(mControllerObject);
-
+        CalibrateControllerFragment calibrateControllerFragment = CalibrateControllerFragment.newInstance();
         FragmentTransaction transation = getFragmentManager().beginTransaction();
         transation.replace(R.id.fragment_container, calibrateControllerFragment, CONTROLLER_SETTINGS_FRAGMENT);
         transation.addToBackStack(CONTROLLER_SETTINGS_FRAGMENT);
@@ -141,24 +141,18 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
         return super.onOptionsItemSelected(item);
     }
 
-    /** When invoked, it will assign the saved controller object to activity controller.
-     *  isControllerConfigured is invoked after to update status.
-     * @param savedController The saved object value.
-     */
     @Override
-    public void onSaveControllerConfiguration(ControllerObject savedController) {
-        mControllerObject = savedController;
-
+    public void updateControllerSavedStateDisplay() {
         isControllerConfigured();
     }
 
     /** Checks for the status of controller (connection).  Will update color status
-     *  and can also be used to directly get a boolean value of status
-     * @return true if object contains a value.
+     *  and can also be used to return a boolean value of status
+     *  @return true if configured.
      */
     public boolean isControllerConfigured() {
-        if (mControllerObject != null) {
-            mControllerIndicator.setBackgroundResource(R.color.flat_green2);
+        if (mControllerObject.getConfiguredState()) {
+            mControllerIndicator.setBackgroundResource(R.color.flat_green);
             return true;
         } else {
             mControllerIndicator.setBackgroundResource(R.color.flat_red2);

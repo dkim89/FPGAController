@@ -72,7 +72,7 @@ public class ExamineAccelFragment extends Fragment implements ControllerInterfac
         mDecreaseAngle = (Button) view.findViewById(R.id.angle_down_arrow_button);
         initializeListeners();
 
-        mFilterControl.setText("Filter Value\n" + String.format("%6.2f", mController.getFilterValue()));
+        mFilterControl.setText("Filter Value\n" + String.format("%6.2f", mController.getKFactorValue()));
         mAngleSensitivity.setText(String.format("Angle Precision\n" + mController.getAnglePrecision()));
 
         mListener.exitMainMenuFragment();
@@ -92,7 +92,7 @@ public class ExamineAccelFragment extends Fragment implements ControllerInterfac
             @Override
             public void onClick(View v) {
                 mController.increaseFilterValue();
-                mFilterControl.setText("Filter Value\n" + String.format("%6.2f", mController.getFilterValue()));
+                mFilterControl.setText("Filter Value\n" + String.format("%6.2f", mController.getKFactorValue()));
             }
         });
 
@@ -100,7 +100,7 @@ public class ExamineAccelFragment extends Fragment implements ControllerInterfac
             @Override
             public void onClick(View v) {
                 mController.decreaseFilterValue();
-                mFilterControl.setText("Filter Value\n" + String.format("%6.2f", mController.getFilterValue()));
+                mFilterControl.setText("Filter Value\n" + String.format("%6.2f", mController.getKFactorValue()));
             }
         });
 

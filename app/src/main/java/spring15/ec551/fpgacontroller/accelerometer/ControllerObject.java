@@ -45,6 +45,9 @@ public class ControllerObject implements SensorEventListener, Parcelable {
     float mFilterValues[];
     float mNetValues[];
 
+    /** Checks for whether the controller has been configured by user. */
+    private boolean isConfigured;
+
     /** Used to calculate the angle **/
     float mAnglePrecision;
     int mLeftBound;               // Uses integer for precision purposes
@@ -52,48 +55,41 @@ public class ControllerObject implements SensorEventListener, Parcelable {
     final float ANGLE_SENSITIVITY_HIGH_LIMIT = 10.0f;
     final float ANGLE_INCREMENT = 0.5f;
 
-    public ControllerObject() {};
     /** Implements an empty controller object for activity level. This should not
      *  initially be set to listen to anything */
     public ControllerObject(Context context) {
-        this(context, null, null);
+        this(context, null);
     }
 
     /** Implements default values */
     public ControllerObject(Context context, ControllerInterfaceListener interfacer) {
-       this(context,interfacer, null);
-    }
+        isConfigured = false;
 
-    public ControllerObject(Context context, ControllerInterfaceListener interfacer,
-                            ControllerObject object) {
         if (interfacer != null)
             mInterface = interfacer;
 
-        mBaseValues = new float[]{ZERO_FLOAT, ZERO_FLOAT, ZERO_FLOAT};
-        mFilterValues = new float[]{ZERO_FLOAT, ZERO_FLOAT, ZERO_FLOAT};
-
         /** Initialize object with default values */
-        if (object == null) {
-            mNetValues = new float[]{ZERO_FLOAT, ZERO_FLOAT, ZERO_FLOAT};
-            mLeftBound = DEFAULT_BOUND;
-            mRightBound = DEFAULT_BOUND;
-            mAnglePrecision = 1.0f;
-            mFilter = new AccelerometerHighPassFilter(DEFAULT_K_FACTOR);
-        }
-        /** Initialize with saved controller object */
-        else {
-            setSavedSettings(object);
-        }
+        setDefaultSettings();
 
         mSensorManager = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
         if (mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
             mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         }
-        registerSensor();
+    }
 
+    public void setDefaultSettings() {
+        mBaseValues = new float[]{ZERO_FLOAT, ZERO_FLOAT, ZERO_FLOAT};
+        mFilterValues = new float[]{ZERO_FLOAT, ZERO_FLOAT, ZERO_FLOAT};
+        mNetValues = new float[]{ZERO_FLOAT, ZERO_FLOAT, ZERO_FLOAT};
+        mLeftBound = DEFAULT_BOUND;
+        mRightBound = DEFAULT_BOUND;
+        mAnglePrecision = 1.0f;
+        mFilter = new AccelerometerHighPassFilter(DEFAULT_K_FACTOR);
     }
 
     public void setSavedSettings(ControllerObject object) {
+        mBaseValues = object.getBaseValue();
+        mFilterValues = object.getFilterValues();
         mNetValues = object.getNetValue();
         mLeftBound = object.getLeftBound();
         mRightBound = object.getRightBound();
@@ -102,7 +98,9 @@ public class ControllerObject implements SensorEventListener, Parcelable {
     }
 
     /** Getters */
-    public float    getFilterValue()    { return this.mFilter.kFilteringFactor; }
+    public float    getKFactorValue()   { return this.mFilter.kFilteringFactor; }
+    public float[]  getBaseValue()      { return this.mBaseValues; }
+    public float[]  getFilterValues()   { return this.mFilterValues; }
     public float[]  getNetValue()       { return this.mNetValues; }
     public int      getLeftBound()      { return this.mLeftBound; }
     public int      getRightBound()     { return this.mRightBound; }
@@ -113,6 +111,20 @@ public class ControllerObject implements SensorEventListener, Parcelable {
         mNetValues[X] = ZERO_FLOAT;
         mNetValues[Y] = ZERO_FLOAT;
         mNetValues[Z] = ZERO_FLOAT;
+    }
+
+    public void setInterface(ControllerInterfaceListener interfaceListener) {
+        mInterface = interfaceListener;
+    }
+
+    /** Set the state of whether controller has been configured */
+    public void setConfiguredState(boolean state) {
+        isConfigured = state;
+    }
+
+    /** Get the current state of controller configuration */
+    public boolean getConfiguredState() {
+        return isConfigured;
     }
 
     /** Attach and detach sensor */
@@ -219,6 +231,10 @@ public class ControllerObject implements SensorEventListener, Parcelable {
 
     /** Parcelable implementation */
     protected ControllerObject(Parcel in) {
+        mBaseValues = new float[3];
+        in.readFloatArray(mBaseValues);
+        mFilterValues = new float[3];
+        in.readFloatArray(mFilterValues);
         mNetValues = new float[3];
         in.readFloatArray(mNetValues);
         mAnglePrecision = in.readFloat();
@@ -233,6 +249,8 @@ public class ControllerObject implements SensorEventListener, Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeFloatArray(mBaseValues);
+        dest.writeFloatArray(mFilterValues);
         dest.writeFloatArray(mNetValues);
         dest.writeFloat(mAnglePrecision);
         dest.writeInt(mLeftBound);
