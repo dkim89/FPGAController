@@ -11,8 +11,10 @@ public interface FragmentActionListener {
     /** Invoke an update to saved configuration state of controller */
     public void updateControllerSavedStateDisplay();
 
-    public void enterMainMenuFragment();
+    public void adjustActivityForMainMenu();
 
-    public void exitMainMenuFragment();
+    public void adjustActivityForSettings();
+
+    public void adjustActivityForPlay();
 
 }

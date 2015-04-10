@@ -1,26 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--<color name="activity_background_start">#1AD6FD</color>-->
-    <!--<color name="activity_background_end">#1D62F0</color>-->
 
-    <color name="menu_item_background">#662980B9</color>
-    <color name="silver">#c0c0c0</color>
-
+    <color name="background_blue">#2B2B2B</color>
 
     <color name="transparent">#00FFFFFF</color>
-    <!--<color name="flat_black">#1D1D1D</color>-->
     <color name="flat_white">#ECF0F1</color>
-    <color name="flat_gray">#BDC3C7</color>
+    <color name="hud_white">#55FFFFFF</color>
+
+    <color name="flat_gray1">#BDC3C7</color>
+    <color name="flat_gray2">#95A5A6</color>
+
+    <color name="flat_black1">#2B2B2B</color>
+
     <color name="flat_blue1">#3498DB</color>
     <color name="flat_blue2">#2980B9</color>
-
-    <color name="flat_dark_grey1">#5C97BF</color>
-    <color name="flat_dark_grey2">#424242</color>
-
+    <color name="flat_red1">#E74C3C</color>
     <color name="flat_red2">#E26A6A</color>
     <color name="flat_green">#27AE60</color>
     <color name="flat_yellow">#F1C40F</color>
     <color name="reset_color">#ECF0F1</color>
-    <color name="black">#000000</color>
-    <color name="white">#FFFFFF</color>
 </resources>

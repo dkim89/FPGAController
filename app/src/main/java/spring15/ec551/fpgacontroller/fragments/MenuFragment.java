@@ -63,7 +63,7 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
         mListView.setAdapter(mListAdapter);
         mListView.setOnItemClickListener(this);
 
-        mListener.enterMainMenuFragment();
+        mListener.adjustActivityForMainMenu();
 
         return view;
     }

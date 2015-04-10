@@ -11,7 +11,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
-
 import spring15.ec551.fpgacontroller.R;
 import spring15.ec551.fpgacontroller.accelerometer.ControllerObject;
 import spring15.ec551.fpgacontroller.fragments.CalibrateControllerFragment;
@@ -131,15 +130,24 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
     }
 
     @Override
-    public void enterMainMenuFragment() {
+    public void adjustActivityForMainMenu() {
         mBackButton.setVisibility(View.INVISIBLE);
         mTopHudContainer.setVisibility(View.VISIBLE);
     }
 
     @Override
-    public void exitMainMenuFragment() {
+    public void adjustActivityForSettings() {
         mBackButton.setVisibility(View.VISIBLE);
         mTopHudContainer.setVisibility(View.INVISIBLE);
+    }
+
+    public void adjustActivityForPlay() {
+        mBackButton.setVisibility(View.INVISIBLE);
+        mTopHudContainer.setVisibility(View.INVISIBLE);
+
+        RelativeLayout layout = (RelativeLayout) findViewById(R.id.activity_layout);
+        layout.setBackgroundColor(getResources().getColor(R.color.flat_black1));
+
     }
 
     @Override

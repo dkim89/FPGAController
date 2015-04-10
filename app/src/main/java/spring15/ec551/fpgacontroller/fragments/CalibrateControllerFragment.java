@@ -56,7 +56,7 @@ public class CalibrateControllerFragment extends Fragment implements ControllerI
         mConfigButtonRight = (CustomTextView) view.findViewById(R.id.config_button_right);
         mExampleImage = (ImageView) view.findViewById(R.id.example_image);
 
-        mListener.exitMainMenuFragment();
+        mListener.adjustActivityForSettings();
 
         /* If configured, display current settings; otherwise initialize config procedure */
         if (MainActivity.mControllerObject.getConfiguredState()) {
@@ -186,62 +186,3 @@ public class CalibrateControllerFragment extends Fragment implements ControllerI
         mAngleNum.setText("" + angleValue);
     }
 }
-
-    /*
-    private void measureValue(String tag, boolean retry) {
-        mConfigButtonLeft.setVisibility(View.INVISIBLE);
-         mTimerCheck = true;
-         boolean isSuccessful = true;
-
-         // Runs for 3 seconds, then expires the timer
-         final Handler handler = new Handler(mContext.getMainLooper());
-         handler.postDelayed(new Runnable() {
-        @Override
-        public void run() {
-        mTimerCheck = false;
-        }
-        }, FIVE_SECONDS);
-
-         switch (tag) {
-         // Runs a time elapsed check of filtered X,Y values. Filtered values should be between -.5 to .5.
-         case MEASURE_BASE:
-         mDeviceImage.setRotation(0.0f);
-         mInstructionText.setText("Continue to hold position");
-         if (!retry) {
-         mNotificationText.setText("Measuring...");
-         } else {
-         mNotificationText.setText("Not steady enough.  Hold steady...");
-         }
-         while (mTimerCheck) {
-         if (mFilteredValues[X] > 0.5f || mFilteredValues[Y] > 0.5f
-         || mFilteredValues[X] < -0.5f || mFilteredValues[Y] < -0.5f) {
-         isSuccessful = false;
-         }
-         }
-
-         if (isSuccessful) {
-         mController.resetNetValues();
-         measureValue(MEASURE_LEFT, false);
-         } else {
-         measureValue(MEASURE_BASE, true);
-         }
-         break;
-         case MEASURE_LEFT:
-         mDeviceImage.setRotation(90.0f);
-         mInstructionText.setText("Tilt your device to the left as shown");
-         mNotificationText.setText("Calibrating left bound...");
-         while(mTimerCheck) {}
-         mController.setLeftBound(new int[]{(int)mNetValues[X], (int)mNetValues[Y]});
-         measureValue(MEASURE_RIGHT, false);
-         break;
-         case MEASURE_RIGHT:
-         mDeviceImage.setRotation(-90.0f);
-         mInstructionText.setText("Tilt your device to the right as shown");
-         mNotificationText.setText("Calibrating right bound...");
-         while(mTimerCheck) {}
-         mController.setRightRound(new int[]{(int)mNetValues[X], (int)mNetValues[Y]});
-         completeConfiguration();
-         break;
-         }
-
-    } */

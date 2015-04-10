@@ -6,6 +6,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.SeekBar;
 
+import spring15.ec551.fpgacontroller.R;
+
 /**
  * Created by davidkim on 4/9/15.
  */
@@ -13,18 +15,18 @@ public class ThrottleSlider extends SeekBar {
 
     public ThrottleSlider(Context context) {
         super(context);
-        setCustomPosition();
+        initializeProgressBar();
     }
 
     public ThrottleSlider(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        setCustomPosition();
+        initializeProgressBar();
 
     }
 
     public ThrottleSlider(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setCustomPosition();
+        initializeProgressBar();
     }
 
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
@@ -45,6 +47,12 @@ public class ThrottleSlider extends SeekBar {
     }
 
     @Override
+    public synchronized void setProgress(int progress) {
+        super.setProgress(progress);
+        onSizeChanged(getWidth(), getHeight(), 0, 0);
+    }
+
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (!isEnabled()) {
             return false;
@@ -53,23 +61,25 @@ public class ThrottleSlider extends SeekBar {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_MOVE:
-            case MotionEvent.ACTION_UP:
                 setProgress(getMax() - (int) (getMax() * event.getY() / getHeight()));
                 onSizeChanged(getWidth(), getHeight(), 0, 0);
                 break;
-
+            case MotionEvent.ACTION_UP:
+                System.out.println("ACTIONCANCEL!");
+                break;
             case MotionEvent.ACTION_CANCEL:
                 break;
-
 
         }
         return true;
     }
 
-    private void setCustomPosition() {
-        setMax(200);
-        setProgress(100);
+    private void initializeProgressBar() {
+        setProgressDrawable(getResources().getDrawable(R.drawable.throttle_seekbar));
+        setThumb(getResources().getDrawable(R.drawable.throttle_thumb));
     }
+
+
 
     @Override
     public void setOnSeekBarChangeListener(OnSeekBarChangeListener l) {

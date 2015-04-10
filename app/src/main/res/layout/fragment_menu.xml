@@ -6,7 +6,7 @@
     android:layout_marginRight="@dimen/margin1"
     android:layout_marginBottom="@dimen/margin1"
     android:layout_marginTop="@dimen/menu_fragment_top_margin"
-    android:background="@color/flat_dark_grey1">
+    android:background="@color/background_blue">
 
     <ListView
         android:layout_alignParentTop="true"
@@ -15,7 +15,7 @@
         android:paddingLeft="@dimen/menu_list_padding_horizontal"
         android:paddingRight="@dimen/menu_list_padding_horizontal"
         android:dividerHeight="@dimen/menu_list_divider_height"
-        android:divider="@color/flat_dark_grey1"
+        android:divider="@color/background_blue"
         android:layout_centerVertical="true"
         android:id="@+id/menu_list"
         android:layout_width="match_parent"

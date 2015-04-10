@@ -55,6 +55,14 @@
     <dimen name="device_image_width">160dp</dimen>
     <dimen name="device_image_height">100dp</dimen>
 
+    <!-- Throttle -->
+    <dimen name="throttle_bar_mid_indent_white">84dp</dimen>
+    <dimen name="throttle_bar_mid_indent">85dp</dimen>
+    <dimen name="throttle_thickness">5dp</dimen>
+    <dimen name="throttle_thumb_size">30dp</dimen>
+    <dimen name="throttle_margin">20dp</dimen>
+    <dimen name="throttle_background_width">50dp</dimen>
+    <dimen name="throttle_text">20sp</dimen>
     <!-- Play HUD -->
 
 </resources>

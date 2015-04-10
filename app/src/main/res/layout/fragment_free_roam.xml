@@ -7,6 +7,36 @@
         android:layout_width="wrap_content"
         android:layout_height="200dp"
         android:layout_alignParentBottom="true"
-        android:scrollbarAlwaysDrawVerticalTrack="true" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="@dimen/throttle_margin"
+        android:layout_marginStart="@dimen/throttle_margin"
+        android:layout_marginBottom="@dimen/throttle_margin"
+        android:minHeight="@dimen/throttle_thickness"
+        android:maxHeight="@dimen/throttle_thickness"/>
+
+    <spring15.ec551.fpgacontroller.resources.CustomTextView
+        android:id="@+id/throttle_speed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@id/throttle_slider"
+        android:layout_toEndOf="@id/throttle_slider"
+        android:layout_marginBottom="@dimen/throttle_margin"
+        android:layout_marginLeft="@dimen/throttle_margin"
+        android:layout_marginStart="@dimen/throttle_margin"
+        android:text="@string/start_speed"
+        android:textSize="@dimen/throttle_text"/>
+
+    <spring15.ec551.fpgacontroller.resources.CustomTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/throttle_slider"
+        android:layout_toEndOf="@id/throttle_slider"
+        android:layout_above="@id/throttle_speed"
+        android:layout_marginLeft="@dimen/throttle_margin"
+        android:layout_marginStart="@dimen/throttle_margin"
+        android:text="@string/throttle_speed"
+        android:textSize="@dimen/throttle_text"/>
 
 </RelativeLayout>

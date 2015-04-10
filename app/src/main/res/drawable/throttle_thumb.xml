@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android" >
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
 
-    <gradient
-        android:angle="0"
-        android:endColor="@color/flat_white"
-        android:startColor="@color/flat_white" />
+    <solid android:color="@color/flat_white" />
 
-    <corners android:radius="6dp" />
+    <stroke android:color="@color/flat_gray2"
+        android:width="2dp" />
+
+    <size android:height="@dimen/throttle_thumb_size"
+        android:width="@dimen/throttle_thumb_size" />
 
 </shape>
