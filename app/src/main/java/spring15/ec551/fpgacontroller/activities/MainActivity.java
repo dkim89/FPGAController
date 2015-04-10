@@ -18,6 +18,7 @@ import spring15.ec551.fpgacontroller.fragments.CalibrateControllerFragment;
 import spring15.ec551.fpgacontroller.fragments.ExamineAccelFragment;
 import spring15.ec551.fpgacontroller.fragments.FragmentActionListener;
 import spring15.ec551.fpgacontroller.fragments.MenuFragment;
+import spring15.ec551.fpgacontroller.fragments.PlayFragment;
 import spring15.ec551.fpgacontroller.resources.CustomTextView;
 
 public class MainActivity extends ActionBarActivity implements FragmentActionListener {
@@ -26,10 +27,12 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
     final String MENU_FRAGMENT = "MENU_FRAGMENT";
     final String EXAMINE_ACCEL_FRAGMENT = "EXAMINE_ACCEL_FRAGMENT";
     final String CONTROLLER_SETTINGS_FRAGMENT = "CONTROLLER_SETTINGS_FRAGMENT";
+    final String FREE_ROAM_FRAGMENT = "FREE_ROAM_FRAGMENT";
 
     // Controller object that is used throughout the application.
     public static ControllerObject mControllerObject;
 
+    // Layout items
     FrameLayout mFragmentContainer;
     RelativeLayout mTopHudContainer;
     CustomTextView mControllerIndicator;
@@ -52,8 +55,8 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
         mControllerIndicator = (CustomTextView) findViewById(R.id.controller_text);
         mVehicleIndicator = (CustomTextView) findViewById(R.id.vehicle_text);
         mBackButton = (Button) findViewById(R.id.back_button);
-
         setBackButtonListener();
+
         // Check for connection
         isControllerConfigured();
         isVehicleConnected();
@@ -77,11 +80,17 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
 
     /** Listener for MenuFragment ListView */
     @Override
-    public void onSettingsMenuItemClickListener(String itemName) {
-        if (itemName.equals(MenuFragment.EXAMINE_ACCEL))
-            initializeExamineAccelFragment();
-        else if (itemName.equals(MenuFragment.CALIBRATE_CONTROLLER)) {
-            initializeControllerSettingsFragment();
+    public void onMenuItemClickListener(String itemName) {
+        switch (itemName) {
+            case MenuFragment.EXAMINE_ACCEL:
+                initializeExamineAccelFragment();
+                break;
+            case MenuFragment.CALIBRATE_CONTROLLER:
+                initializeControllerSettingsFragment();
+                break;
+            case MenuFragment.FREE_ROAM:
+                initializeFreeRoamFragment();
+                break;
         }
     }
 
@@ -106,10 +115,19 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
     /** ControllerSettingsFragment initializer */
     private void initializeControllerSettingsFragment() {
         CalibrateControllerFragment calibrateControllerFragment = CalibrateControllerFragment.newInstance();
-        FragmentTransaction transation = getFragmentManager().beginTransaction();
-        transation.replace(R.id.fragment_container, calibrateControllerFragment, CONTROLLER_SETTINGS_FRAGMENT);
-        transation.addToBackStack(CONTROLLER_SETTINGS_FRAGMENT);
-        transation.commit();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, calibrateControllerFragment, CONTROLLER_SETTINGS_FRAGMENT);
+        transaction.addToBackStack(CONTROLLER_SETTINGS_FRAGMENT);
+        transaction.commit();
+    }
+
+    /** FreeRoamFragment initializer */
+    private void initializeFreeRoamFragment() {
+        PlayFragment playFragment = PlayFragment.newInstance();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, playFragment, FREE_ROAM_FRAGMENT);
+        transaction.addToBackStack(FREE_ROAM_FRAGMENT);
+        transaction.commit();
     }
 
     @Override

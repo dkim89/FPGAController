@@ -54,4 +54,7 @@
     <!-- Ratio 16:10 -->
     <dimen name="device_image_width">160dp</dimen>
     <dimen name="device_image_height">100dp</dimen>
+
+    <!-- Play HUD -->
+
 </resources>

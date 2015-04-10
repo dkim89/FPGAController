@@ -28,7 +28,6 @@ public class CalibrateControllerFragment extends Fragment implements ControllerI
 
     public static CalibrateControllerFragment newInstance() {
         return new CalibrateControllerFragment();
-
     }
 
     public CalibrateControllerFragment() {
@@ -45,7 +44,7 @@ public class CalibrateControllerFragment extends Fragment implements ControllerI
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.layout_config_controller, container, false);
+        View view = inflater.inflate(R.layout.fragment_config_controller, container, false);
 
         mInstructionText = (CustomTextView) view.findViewById(R.id.controller_instruc_textview);
         mNotificationText = (CustomTextView) view.findViewById(R.id.controller_notify_textview);

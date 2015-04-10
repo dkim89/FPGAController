@@ -6,7 +6,7 @@ package spring15.ec551.fpgacontroller.fragments;
 public interface FragmentActionListener {
     /** Listens for the particular settings item clicked
      * @param itemName the string value associated with the settings item */
-    public void onSettingsMenuItemClickListener(String itemName);
+    public void onMenuItemClickListener(String itemName);
 
     /** Invoke an update to saved configuration state of controller */
     public void updateControllerSavedStateDisplay();
