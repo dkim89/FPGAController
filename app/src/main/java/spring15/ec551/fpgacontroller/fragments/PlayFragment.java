@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
 
+import java.text.DecimalFormat;
+
 import spring15.ec551.fpgacontroller.R;
 import spring15.ec551.fpgacontroller.accelerometer.ControllerInterfaceListener;
 import spring15.ec551.fpgacontroller.activities.MainActivity;
@@ -24,6 +26,8 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
     ThrottleSlider mThrottleSlider;
     CustomTextView mThrottleSpeed;
 
+    DecimalFormat df;
+
     public static PlayFragment newInstance() {
         return new PlayFragment();
     }
@@ -35,6 +39,7 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
         super.onCreate(savedInstanceState);
 
         MainActivity.mControllerObject.setInterface(this);
+        df = new DecimalFormat("+###;-###");
 
     }
 
@@ -44,20 +49,13 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
 
         mListener.adjustActivityForPlay();
         mThrottleSpeed = (CustomTextView) view.findViewById(R.id.throttle_speed);
-
         mThrottleSlider = (ThrottleSlider) view.findViewById(R.id.throttle_slider);
-        mThrottleSlider.setMax(200);
-        mThrottleSlider.post(new Runnable() {
-            @Override
-            public void run() {
-                mThrottleSlider.setProgress(100);
-            }
-        });
+
 
         mThrottleSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                mThrottleSpeed.setText("" + mThrottleSlider.getProgress());
+                mThrottleSpeed.setText(df.format(progress-ThrottleSlider.MID_PROGRESS) + "%");
             }
 
             @Override

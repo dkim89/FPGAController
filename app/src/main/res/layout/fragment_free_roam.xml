@@ -5,7 +5,7 @@
     <spring15.ec551.fpgacontroller.resources.ThrottleSlider
         android:id="@+id/throttle_slider"
         android:layout_width="wrap_content"
-        android:layout_height="200dp"
+        android:layout_height="@dimen/throttle_bar_length"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
@@ -14,6 +14,7 @@
         android:layout_marginBottom="@dimen/throttle_margin"
         android:minHeight="@dimen/throttle_thickness"
         android:maxHeight="@dimen/throttle_thickness"/>
+
 
     <spring15.ec551.fpgacontroller.resources.CustomTextView
         android:id="@+id/throttle_speed"
