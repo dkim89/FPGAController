@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.SeekBar;
 
 import java.text.DecimalFormat;
@@ -25,6 +26,7 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
     FragmentActionListener mListener;
     ThrottleSlider mThrottleSlider;
     CustomTextView mThrottleSpeed;
+    Button mFireButton;
 
     DecimalFormat df;
 
@@ -50,6 +52,7 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
         mListener.adjustActivityForPlay();
         mThrottleSpeed = (CustomTextView) view.findViewById(R.id.throttle_speed);
         mThrottleSlider = (ThrottleSlider) view.findViewById(R.id.throttle_slider);
+        mFireButton = (Button) view.findViewById(R.id.fire_button);
 
 
         mThrottleSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {

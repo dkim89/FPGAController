@@ -12,4 +12,6 @@
 
     <string name="throttle_speed">SPEED</string>
     <string name="start_speed">+0%</string>
+
+    <string name="laser_ammo">AMMO</string>
 </resources>

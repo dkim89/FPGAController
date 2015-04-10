@@ -62,6 +62,8 @@
     <dimen name="throttle_thumb_size">30dp</dimen>
     <dimen name="throttle_margin">20dp</dimen>
     <dimen name="throttle_text">20sp</dimen>
-    <!-- Play HUD -->
+
+    <!-- Fire Button -->
+    <dimen name="fire_button_dimen">60dp</dimen>
 
 </resources>
