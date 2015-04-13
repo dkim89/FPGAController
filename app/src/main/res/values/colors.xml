@@ -7,6 +7,7 @@
     <color name="flat_white">#ECF0F1</color>
     <color name="hud_white">#55FFFFFF</color>
     <color name="hud_blue">#333498DB</color>
+    <color name="hud_red">#88E74C3C</color>
 
     <color name="flat_gray1">#BDC3C7</color>
     <color name="flat_gray2">#95A5A6</color>

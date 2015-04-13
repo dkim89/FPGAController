@@ -62,20 +62,25 @@ public class ThrottleSlider extends SeekBar {
         onSizeChanged(getWidth(), getHeight(), 0, 0);
     }
 
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (!isEnabled()) {
             return false;
         }
 
-        switch (event.getAction()) {
+        switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_POINTER_DOWN:
                 cancelTimer = true;
                 break;
             case MotionEvent.ACTION_MOVE:
                 cancelTimer = true;
                 setProgress(getMax() - (int) (getMax() * event.getY() / getHeight()));
                 onSizeChanged(getWidth(), getHeight(), 0, 0);
+                break;
+            case MotionEvent.ACTION_POINTER_UP:
+                cancelTimer = true;
                 break;
             case MotionEvent.ACTION_UP:
                 cancelTimer = false;
@@ -103,6 +108,10 @@ public class ThrottleSlider extends SeekBar {
         return true;
     }
 
+    public void onActionMove(MotionEvent event) {
+        setProgress(getMax() - (int) (getMax() * event.getY() / getHeight()));
+        onSizeChanged(getWidth(), getHeight(), 0, 0);
+    }
     private void initializeProgressBar() {
         setProgressDrawable(getResources().getDrawable(R.drawable.throttle_seekbar));
         setThumb(getResources().getDrawable(R.drawable.throttle_thumb));

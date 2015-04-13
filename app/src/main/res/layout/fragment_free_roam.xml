@@ -81,9 +81,10 @@
                 android:textSize="@dimen/throttle_text"/>
 
             <spring15.ec551.fpgacontroller.resources.CustomTextView
+                android:id="@+id/current_ammo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="100/100"
+                android:text="0"
                 android:textSize="@dimen/throttle_text"/>
         </LinearLayout>
 
