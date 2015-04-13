@@ -26,7 +26,7 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
     final String MENU_FRAGMENT = "MENU_FRAGMENT";
     final String EXAMINE_ACCEL_FRAGMENT = "EXAMINE_ACCEL_FRAGMENT";
     final String CONTROLLER_SETTINGS_FRAGMENT = "CONTROLLER_SETTINGS_FRAGMENT";
-    final String FREE_ROAM_FRAGMENT = "FREE_ROAM_FRAGMENT";
+    public final static String FREE_ROAM_FRAGMENT = "FREE_ROAM_FRAGMENT";
 
     // Controller object that is used throughout the application.
     public static ControllerObject mControllerObject;

@@ -100,4 +100,14 @@
         </LinearLayout>
     </LinearLayout>
 
+    <spring15.ec551.fpgacontroller.resources.AmmoSlider
+        android:id="@+id/ammo_reload_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="10dp"
+        android:layout_above="@id/fire_hud"
+        android:layout_alignLeft="@id/fire_hud"
+        android:layout_alignStart="@id/fire_hud"
+        android:layout_alignRight="@id/fire_hud"
+        android:layout_alignEnd="@id/fire_hud"/>
+
 </RelativeLayout>
