@@ -8,7 +8,7 @@
     <string name="reset">RESET NET VALUES</string>
     <string name="instruction">INSTRUCTION HERE</string>
     <string name="notify">NOTIFICATION HERE</string>
-    <string name="angle">00</string>
+    <string name="angle">0&#176;</string>
 
     <string name="throttle_speed">SPEED</string>
     <string name="start_speed">+0%</string>

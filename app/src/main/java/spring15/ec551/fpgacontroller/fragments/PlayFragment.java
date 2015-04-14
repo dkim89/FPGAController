@@ -5,12 +5,12 @@ import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import java.text.DecimalFormat;
@@ -36,12 +36,14 @@ import spring15.ec551.fpgacontroller.resources.ThrottleSlider;
     Context mContext;
     FragmentActionListener mListener;
 
+    // Steering
+    ImageView mSteeringIcon;
+//    CustomTextView mLeftAngle;
+//    CustomTextView mRightAngle;
+
     // Throttle
     ThrottleSlider mThrottleSlider;
     CustomTextView mThrottleSpeed;
-
-    // Steering
-    // TODO
 
     // "FIRE THE LASERS!"
     LinearLayout mFireHud;
@@ -69,8 +71,9 @@ import spring15.ec551.fpgacontroller.resources.ThrottleSlider;
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-          MainActivity.mControllerObject.setInterface(this);
-          speedDecimalFormat = new DecimalFormat("+###;-###");
+        MainActivity.mControllerObject.setInterface(this);
+        speedDecimalFormat = new DecimalFormat("+###;-###");
+        mLaserHandler = new Handler();
     }
 
     @Override
@@ -78,6 +81,12 @@ import spring15.ec551.fpgacontroller.resources.ThrottleSlider;
         View view = inflater.inflate(R.layout.fragment_free_roam, container, false);
 
         mListener.adjustActivityForPlay();
+
+        // Steering
+        mSteeringIcon = (ImageView) view.findViewById(R.id.steering_rotating_icon);
+        mSteeringIcon.setRotation(0.0f);
+//        mLeftAngle = (CustomTextView) view.findViewById(R.id.left_angle_text);
+//        mRightAngle = (CustomTextView) view.findViewById(R.id.right_angle_text);
 
         // Throttle
         mThrottleSpeed = (CustomTextView) view.findViewById(R.id.throttle_speed);
@@ -158,7 +167,6 @@ import spring15.ec551.fpgacontroller.resources.ThrottleSlider;
 
     /** Registers first shot - 0.1 delay */
     private void firstBlood() {
-        mLaserHandler = new Handler();
         mUIRunnable = new Runnable() {
             @Override
             public void run() {
@@ -309,6 +317,13 @@ import spring15.ec551.fpgacontroller.resources.ThrottleSlider;
 
     @Override
     public void onAngleChangeListener(int angleValue) {
-
+        mSteeringIcon.setRotation(angleValue);
+//        if (angleValue < 0) {
+//            mLeftAngle.setText((angleValue*-1) + "\u00B0");
+//            mRightAngle.setText("0"+ "\u00B0");
+//        } else {
+//            mLeftAngle.setText("0" + "\u00B0");
+//            mRightAngle.setText(angleValue + "\u00B0");
+//        }
     }
-    }
+}

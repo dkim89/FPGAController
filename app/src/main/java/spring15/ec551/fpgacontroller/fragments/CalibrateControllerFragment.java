@@ -183,6 +183,6 @@ public class CalibrateControllerFragment extends Fragment implements ControllerI
     @Override
     public void onAngleChangeListener(int angleValue) {
         mDeviceImage.setRotation(angleValue);
-        mAngleNum.setText("" + angleValue);
+        mAngleNum.setText("" + angleValue + "\u00B0");
     }
 }
