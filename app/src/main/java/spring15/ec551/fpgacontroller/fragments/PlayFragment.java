@@ -39,11 +39,15 @@ import spring15.ec551.fpgacontroller.resources.ThrottleSlider;
     ThrottleSlider mThrottleSlider;
     CustomTextView mThrottleSpeed;
 
-    // "La-serz"
+    // Steering
+    // TODO
+
+    // "FIRE THE LASERS!"
     LinearLayout mFireHud;
     Button mFireButton;
+    Button mReloadButton;
     CustomTextView mAmmoTextView;
-    AmmoSlider mReloadProgressBar;
+    AmmoSlider mAmmoSlider;
     Handler mLaserHandler;
     Runnable mUIRunnable;
     boolean isFireHeldDown;
@@ -95,10 +99,18 @@ import spring15.ec551.fpgacontroller.resources.ThrottleSlider;
 
         // Fire
         mFireButton = (Button) view.findViewById(R.id.fire_button);
+        mReloadButton = (Button) view.findViewById(R.id.reload_button);
         mAmmoTextView = (CustomTextView) view.findViewById(R.id.current_ammo);
         mFireHud = (LinearLayout) view.findViewById(R.id.fire_hud);
-        initializeLasers(MAX_AMMO, RELOAD_DELAY);
-        mReloadProgressBar = (AmmoSlider) view.findViewById(R.id.ammo_reload_bar);
+        mAmmoSlider = (AmmoSlider) view.findViewById(R.id.ammo_bar);
+        initializeLasers(MAX_AMMO,RELOAD_DELAY);
+
+        mReloadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!isReloading) reload();
+            }
+        });
 
         mFireButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -139,18 +151,18 @@ import spring15.ec551.fpgacontroller.resources.ThrottleSlider;
         return view;
     }
 
-    /** Initialize Lasers */
+    /** Initialize Lasers - Invoked in the UI thread*/
     private void initializeLasers(int maxAmmo, int reloadDelay) {
         this.mMaxAmmo = maxAmmo;
         this.mCurrentAmmo = maxAmmo;
         this.mReloadDelay = reloadDelay;
         this.isReloading = false;
         mAmmoTextView.setText(mCurrentAmmo + "/" + mMaxAmmo);
+        mAmmoSlider.initializeAmmo(MAX_AMMO);
     }
 
-    /** Starts laser shooting procedure */
+    /** Registers first shot - 0.1 delay */
     private void firstBlood() {
-        int shots = 0;
         mLaserHandler = new Handler();
         mUIRunnable = new Runnable() {
             @Override
@@ -170,7 +182,7 @@ import spring15.ec551.fpgacontroller.resources.ThrottleSlider;
         if (isAmmoEmpty())
             reload();
         else
-            mLaserHandler.postDelayed(mUIRunnable, QUARTER_SEC);
+            mLaserHandler.postDelayed(mUIRunnable, TENTH_SEC);
     }
 
     /** Register the second consecutive fire that is 0.25 seconds apart.
@@ -211,15 +223,12 @@ import spring15.ec551.fpgacontroller.resources.ThrottleSlider;
      *  This method is invoked at the UI Thread.
      */
     private void shootLaser() {
-      if (mCurrentAmmo > 1) {
+      if (!isAmmoEmpty()) {
           mCurrentAmmo -= 1;
           mAmmoTextView.setText(mCurrentAmmo + "/" + mMaxAmmo);
-      } else if (mCurrentAmmo == 1) {
-          mCurrentAmmo -= 1;
-          mAmmoTextView.setText(mCurrentAmmo + "/" + mMaxAmmo);
-      } else {
-          mAmmoTextView.setText(mCurrentAmmo + "/" + mMaxAmmo);
+          mAmmoSlider.setProgress(mCurrentAmmo);
       }
+
     }
 
     private boolean isAmmoEmpty() {
@@ -234,18 +243,26 @@ import spring15.ec551.fpgacontroller.resources.ThrottleSlider;
     private void reload() {
         isReloading = true;
         clearCallbacks();
+        mReloadButton.setClickable(false);
+        mFireButton.setClickable(false);
         mFireHud.setBackgroundColor(getResources().getColor(R.color.hud_black));
         mFireButton.setBackgroundResource(R.drawable.fire_button_active);
-//        mAmmoTextView.setText("Reloading");
-        mReloadProgressBar.startReloadCountdown();
+        mReloadButton.setBackgroundResource(R.drawable.reload_button_active);
+        mAmmoTextView.setText("Reloading");
+        mAmmoSlider.startReload();
     }
 
     /** Reloading Complete */
     public void finishReloading() {
-        isReloading = false;
         mCurrentAmmo = mMaxAmmo;
         mAmmoTextView.setText(mCurrentAmmo + "/" + mMaxAmmo);
         fireButtonUp();
+        mReloadButton.setBackgroundResource(R.drawable.reload_button_selector);
+        mAmmoSlider.setProgress(mCurrentAmmo);
+
+        mReloadButton.setClickable(true);
+        mFireButton.setClickable(true);
+        isReloading = false;
     }
 
     private void fireButtonDown() {

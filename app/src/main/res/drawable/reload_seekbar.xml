@@ -12,7 +12,7 @@
     </item>
 
     <item android:id="@android:id/progress">
-        <clip android:drawable="@drawable/ammo_progress" />
+        <clip android:drawable="@drawable/reload_progress" />
     </item>
 
 </layer-list>

@@ -15,9 +15,14 @@ import spring15.ec551.fpgacontroller.fragments.PlayFragment;
  */
 public class AmmoSlider extends ProgressBar{
     // Default reload time is set to 3 seconds
-    final int MAX_PROGRESS = 60;
+    final int RELOAD_MAX = 60;  // 60 iterations
     final int INCREMENT = 1;
     final int TIME = 50;       // 0.05 second
+
+    // Default Ammo
+    final int DEFAULT_MAX_AMMO = 50;
+
+    int mMaxAmmo;
 
     Context mContext;
     Timer mTimer;
@@ -34,23 +39,28 @@ public class AmmoSlider extends ProgressBar{
         super(context, attrs, defStyleAttr);
         mContext = context;
         mTimer = new Timer();
-        initializeProgressBar();
+        initializeAmmo(DEFAULT_MAX_AMMO);
     }
 
-    private void initializeProgressBar() {
+    public void initializeAmmo(int maxAmmo) {
+        mMaxAmmo = maxAmmo;
         setProgressDrawable(getResources().getDrawable(R.drawable.ammo_seekbar));
-        setMax(MAX_PROGRESS);
-        setProgress(0);
+        setMax(mMaxAmmo);
+        setProgress(mMaxAmmo);
     }
 
-    public void startReloadCountdown() {
+
+    public void startReload() {
+        setProgressDrawable(getResources().getDrawable(R.drawable.reload_seekbar));
+        setMax(RELOAD_MAX);
+        setProgress(0);
         mTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 ((MainActivity) mContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (getProgress() < MAX_PROGRESS) {
+                        if (getProgress() < RELOAD_MAX) {
                             setProgress(getProgress() + INCREMENT);
                         } else {
                             cancel();
@@ -64,8 +74,11 @@ public class AmmoSlider extends ProgressBar{
         }, 0, TIME);
     }
 
-    /** This must be modified if using another Fragment other than PlayFragment */
+    /** This invokes PlayFragment method */
     private void finishReload() {
+        setProgressDrawable(getResources().getDrawable(R.drawable.ammo_seekbar));
+        setMax(mMaxAmmo);
+        setProgress(mMaxAmmo);
         PlayFragment fragment = (PlayFragment)((MainActivity) mContext).getFragmentManager().findFragmentByTag(MainActivity.FREE_ROAM_FRAGMENT);
         fragment.finishReloading();
     }

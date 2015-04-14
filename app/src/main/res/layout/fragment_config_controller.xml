@@ -51,7 +51,7 @@
         android:layerType="software"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/calibration_line_drawable"
+        android:background="@drawable/calibration_line_drawable_yellow"
         android:layout_centerInParent="true"
         android:adjustViewBounds="true" />
 
