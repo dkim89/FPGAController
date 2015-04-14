@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -118,30 +119,24 @@ import spring15.ec551.fpgacontroller.resources.ThrottleSlider;
                 if (!isReloading) {
                     isFireHeldDown = false; // Control
                     switch (event.getActionMasked()) {
-                          case MotionEvent.ACTION_DOWN:
-                              isFireHeldDown = true;
-                              fireButtonDown();
-                              firstBlood();
-                              break;
-                          case MotionEvent.ACTION_POINTER_DOWN:
-                              isFireHeldDown = true;
-                              fireButtonDown();
-                              break;
-                          case MotionEvent.ACTION_MOVE:
-                              isFireHeldDown = true;
-                              fireButtonDown();
-                              break;
-                          case MotionEvent.ACTION_POINTER_UP:
-                              isFireHeldDown = true;
-                              fireButtonDown();
-                              break;
-                          case MotionEvent.ACTION_UP:
-                              isFireHeldDown = false;
-                              fireButtonUp();
-                              clearCallbacks();
-                              break;
-                          case MotionEvent.ACTION_CANCEL:
-                              break;
+                        case MotionEvent.ACTION_DOWN:
+                        case MotionEvent.ACTION_POINTER_DOWN:
+                            isFireHeldDown = true;
+                            fireButtonDown();
+                            firstBlood();
+                            break;
+                        case MotionEvent.ACTION_MOVE:
+                            isFireHeldDown = true;
+                            fireButtonDown();
+                            break;
+                        case MotionEvent.ACTION_POINTER_UP:
+                        case MotionEvent.ACTION_UP:
+                            isFireHeldDown = false;
+                            fireButtonUp();
+                            clearCallbacks();
+                            break;
+                        case MotionEvent.ACTION_CANCEL:
+                            break;
                     }
                 }
                 return true;
@@ -189,7 +184,6 @@ import spring15.ec551.fpgacontroller.resources.ThrottleSlider;
      *  Following this, the laser will be shot every 0.1 seconds.
      */
     private void firstBloodPartII() {
-        clearCallbacks();
         mUIRunnable = new Runnable() {
             @Override
             public void run() {

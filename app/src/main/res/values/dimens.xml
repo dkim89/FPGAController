@@ -68,7 +68,7 @@
     <dimen name="throttle_text">20sp</dimen>
 
     <!-- Lasers -->
-    <dimen name="fire_button_dimen">60dp</dimen>
+    <dimen name="fire_button_dimen">70dp</dimen>
     <dimen name="reload_button_dimen">50dp</dimen>
     <dimen name="ammo_bar_height">18dp</dimen>
     <dimen name="ammo_bar_radius">5dp</dimen>
