@@ -71,7 +71,7 @@ import spring15.ec551.fpgacontroller.resources.ThrottleSlider;
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        MainActivity.mControllerObject.setInterface(this);
+        MainActivity.ControllerObject.setInterface(this);
         speedDecimalFormat = new DecimalFormat("+###;-###");
         mLaserHandler = new Handler();
     }
@@ -287,15 +287,15 @@ import spring15.ec551.fpgacontroller.resources.ThrottleSlider;
     @Override
     public void onStart() {
       super.onStart();
-      if (MainActivity.mControllerObject != null)
-          MainActivity.mControllerObject.registerSensor();
+      if (MainActivity.ControllerObject != null)
+          MainActivity.ControllerObject.registerSensor();
     }
 
     @Override
     public void onStop() {
       super.onStop();
-      if (MainActivity.mControllerObject != null)
-          MainActivity.mControllerObject.unregisterSensor();
+      if (MainActivity.ControllerObject != null)
+          MainActivity.ControllerObject.unregisterSensor();
     }
 
     @Override

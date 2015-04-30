@@ -1,6 +1,7 @@
 package spring15.ec551.fpgacontroller.activities;
 
 import android.app.FragmentTransaction;
+import android.bluetooth.BluetoothDevice;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.ActionBarActivity;
@@ -13,11 +14,14 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import spring15.ec551.fpgacontroller.R;
 import spring15.ec551.fpgacontroller.accelerometer.ControllerObject;
+import spring15.ec551.fpgacontroller.bluetooth.ConnectThread;
+import spring15.ec551.fpgacontroller.bluetooth.ConnectedThread;
 import spring15.ec551.fpgacontroller.fragments.CalibrateControllerFragment;
 import spring15.ec551.fpgacontroller.fragments.ExamineAccelFragment;
 import spring15.ec551.fpgacontroller.fragments.FragmentActionListener;
 import spring15.ec551.fpgacontroller.fragments.MenuFragment;
 import spring15.ec551.fpgacontroller.fragments.PlayFragment;
+import spring15.ec551.fpgacontroller.fragments.VehicleSettingsFragment;
 import spring15.ec551.fpgacontroller.resources.CustomTextView;
 
 public class MainActivity extends ActionBarActivity implements FragmentActionListener {
@@ -26,10 +30,13 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
     final String MENU_FRAGMENT = "MENU_FRAGMENT";
     final String EXAMINE_ACCEL_FRAGMENT = "EXAMINE_ACCEL_FRAGMENT";
     final String CONTROLLER_SETTINGS_FRAGMENT = "CONTROLLER_SETTINGS_FRAGMENT";
+    final String VEHICLE_SETTINGS_FRAGMENT = "VEHICLE_SETTINGS_FRAGMENT";
     public final static String FREE_ROAM_FRAGMENT = "FREE_ROAM_FRAGMENT";
 
     // Controller object that is used throughout the application.
-    public static ControllerObject mControllerObject;
+    public static ControllerObject ControllerObject;
+    public static ConnectedThread connectedThread;
+    ConnectThread mConnectThread;
 
     // Layout items
     FrameLayout mFragmentContainer;
@@ -47,7 +54,11 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
         setContentView(R.layout.activity_main);
 
         // Initialize the controller object
-        mControllerObject = new ControllerObject(getBaseContext());
+        ControllerObject = new ControllerObject(getBaseContext());
+
+        // Initialize Bluetooth object
+//        BluetoothObject = new BluetoothController(getBaseContext());
+
 
         mFragmentContainer = (FrameLayout) findViewById(R.id.fragment_container);
         mTopHudContainer = (RelativeLayout) findViewById(R.id.top_hud_container);
@@ -90,8 +101,19 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
             case MenuFragment.FREE_ROAM:
                 initializeFreeRoamFragment();
                 break;
+            case MenuFragment.VEHICLE_SETTINGS:
+                initializeSetupBluetooh();
         }
     }
+
+    private void initializeSetupBluetooh() {
+        VehicleSettingsFragment vehicleSettingsFragment = VehicleSettingsFragment.newInstance();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, vehicleSettingsFragment, VEHICLE_SETTINGS_FRAGMENT);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
 
     /** MenuFragment Transactions */
     private void initializeMenuFragment() {
@@ -177,7 +199,7 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
      *  @return true if configured.
      */
     public boolean isControllerConfigured() {
-        if (mControllerObject.getConfiguredState()) {
+        if (ControllerObject.getConfiguredState()) {
             mControllerIndicator.setBackgroundResource(R.color.flat_green);
             return true;
         } else {
@@ -191,5 +213,21 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
         mVehicleIndicator.setBackgroundResource(R.color.flat_red2);
         return false;
     }
+
+
+    @Override
+    public void connectToBTSocket(BluetoothDevice device) {
+        final ConnectThread mConnectThread = new ConnectThread(device);
+//        Handler handler = new Handler();
+//        Runnable runnable = new Runnable() {
+//            @Override
+//            public void run() {
+//                mAcceptThread.run();
+//            }
+//        };
+//        handler.post(runnable);
+        mConnectThread.start();
+    }
+
 
 }

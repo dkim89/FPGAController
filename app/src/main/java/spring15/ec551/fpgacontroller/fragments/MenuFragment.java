@@ -127,6 +127,7 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
                 mListener.onMenuItemClickListener(CALIBRATE_CONTROLLER);
                 break;
             case VEHICLE_SETTINGS:
+                mListener.onMenuItemClickListener(VEHICLE_SETTINGS);
                 break;
             case EXAMINE_ACCEL:
                 mListener.onMenuItemClickListener(EXAMINE_ACCEL);
