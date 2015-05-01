@@ -37,7 +37,7 @@ public class CalibrateControllerFragment extends Fragment implements ControllerI
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        MainActivity.ControllerObject.setInterface(this);
+        MainActivity.ControllerStaticObject.setInterface(this);
 
     }
 
@@ -59,7 +59,7 @@ public class CalibrateControllerFragment extends Fragment implements ControllerI
         mListener.adjustActivityForSettings();
 
         /* If configured, display current settings; otherwise initialize config procedure */
-        if (MainActivity.ControllerObject.getConfiguredState()) {
+        if (MainActivity.ControllerStaticObject.getConfiguredState()) {
             completeConfiguration();
         } else {
             beginConfiguration();
@@ -84,7 +84,7 @@ public class CalibrateControllerFragment extends Fragment implements ControllerI
         mConfigButtonLeft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MainActivity.ControllerObject.resetNetValues();
+                MainActivity.ControllerStaticObject.resetNetValues();
                 inConfiguration();
             }
         });
@@ -107,7 +107,7 @@ public class CalibrateControllerFragment extends Fragment implements ControllerI
         mConfigButtonLeft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MainActivity.ControllerObject.setConfiguredState(true);
+                MainActivity.ControllerStaticObject.setConfiguredState(true);
                 mListener.updateControllerSavedStateDisplay();
                 completeConfiguration();
             }
@@ -117,7 +117,7 @@ public class CalibrateControllerFragment extends Fragment implements ControllerI
         mConfigButtonRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MainActivity.ControllerObject.resetNetValues();
+                MainActivity.ControllerStaticObject.resetNetValues();
             }
         });
     }
@@ -137,8 +137,8 @@ public class CalibrateControllerFragment extends Fragment implements ControllerI
         mConfigButtonRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MainActivity.ControllerObject.setDefaultSettings();
-                MainActivity.ControllerObject.setConfiguredState(false);
+                MainActivity.ControllerStaticObject.setDefaultSettings();
+                MainActivity.ControllerStaticObject.setConfiguredState(false);
                 mListener.updateControllerSavedStateDisplay();
                 beginConfiguration();
             }
@@ -155,15 +155,15 @@ public class CalibrateControllerFragment extends Fragment implements ControllerI
     @Override
     public void onStart() {
         super.onStart();
-        if (MainActivity.ControllerObject != null)
-            MainActivity.ControllerObject.registerSensor();
+        if (MainActivity.ControllerStaticObject != null)
+            MainActivity.ControllerStaticObject.registerSensor();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        if (MainActivity.ControllerObject != null)
-            MainActivity.ControllerObject.unregisterSensor();
+        if (MainActivity.ControllerStaticObject != null)
+            MainActivity.ControllerStaticObject.unregisterSensor();
     }
 
     @Override

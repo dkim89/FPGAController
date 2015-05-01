@@ -1,11 +1,5 @@
 package spring15.ec551.fpgacontroller.fragments;
 
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
-
-import java.io.ByteArrayInputStream;
-
 /**
  * Created by davidkim on 3/25/15.
  */
@@ -17,14 +11,10 @@ public interface FragmentActionListener {
     /** Invoke an update to saved configuration state of controller */
     public void updateControllerSavedStateDisplay();
 
-    public void connectToBTSocket(BluetoothDevice bt);
-
     public void adjustActivityForMainMenu();
 
     public void adjustActivityForSettings();
 
     public void adjustActivityForPlay();
-
-    public void sendbits(byte[] bytes_);
 
 }

@@ -2,8 +2,10 @@ package spring15.ec551.fpgacontroller.activities;
 
 import android.app.FragmentTransaction;
 import android.bluetooth.BluetoothDevice;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -12,10 +14,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
+
+import java.util.UUID;
+
 import spring15.ec551.fpgacontroller.R;
 import spring15.ec551.fpgacontroller.accelerometer.ControllerObject;
-import spring15.ec551.fpgacontroller.bluetooth.ConnectThread;
-import spring15.ec551.fpgacontroller.bluetooth.ConnectedThread;
+import spring15.ec551.fpgacontroller.bluetooth.BluetoothObject;
 import spring15.ec551.fpgacontroller.fragments.CalibrateControllerFragment;
 import spring15.ec551.fpgacontroller.fragments.ExamineAccelFragment;
 import spring15.ec551.fpgacontroller.fragments.FragmentActionListener;
@@ -31,12 +36,11 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
     final String EXAMINE_ACCEL_FRAGMENT = "EXAMINE_ACCEL_FRAGMENT";
     final String CONTROLLER_SETTINGS_FRAGMENT = "CONTROLLER_SETTINGS_FRAGMENT";
     final String VEHICLE_SETTINGS_FRAGMENT = "VEHICLE_SETTINGS_FRAGMENT";
-    public final static String FREE_ROAM_FRAGMENT = "FREE_ROAM_FRAGMENT";
+    final String FREE_ROAM_FRAGMENT = "FREE_ROAM_FRAGMENT";
 
     // Controller object that is used throughout the application.
-    public static ControllerObject ControllerObject;
-    public static ConnectedThread connectedThread;
-    ConnectThread mConnectThread;
+    public static ControllerObject ControllerStaticObject;
+    public static BluetoothObject BluetoothStaticObject;
 
     // Layout items
     FrameLayout mFragmentContainer;
@@ -54,11 +58,9 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
         setContentView(R.layout.activity_main);
 
         // Initialize the controller object
-        ControllerObject = new ControllerObject(getBaseContext());
-
+        ControllerStaticObject = new ControllerObject(getBaseContext());
         // Initialize Bluetooth object
-//        BluetoothObject = new BluetoothController(getBaseContext());
-
+        BluetoothStaticObject = new BluetoothObject(getBaseContext());
 
         mFragmentContainer = (FrameLayout) findViewById(R.id.fragment_container);
         mTopHudContainer = (RelativeLayout) findViewById(R.id.top_hud_container);
@@ -67,9 +69,9 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
         mBackButton = (Button) findViewById(R.id.back_button);
         setBackButtonListener();
 
-        // Check for connection
-        isControllerConfigured();
-        isVehicleConnected();
+        // Check for connection, update status
+        setControllerConfigureStateColor();
+        setVehicleConnectedStateColor();
 
         // If no fragment is visible
         if (savedInstanceState == null) {
@@ -191,15 +193,15 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
 
     @Override
     public void updateControllerSavedStateDisplay() {
-        isControllerConfigured();
+        setControllerConfigureStateColor();
     }
 
     /** Checks for the status of controller (connection).  Will update color status
      *  and can also be used to return a boolean value of status
      *  @return true if configured.
      */
-    public boolean isControllerConfigured() {
-        if (ControllerObject.getConfiguredState()) {
+    public boolean setControllerConfigureStateColor() {
+        if (ControllerStaticObject.getConfiguredState()) {
             mControllerIndicator.setBackgroundResource(R.color.flat_green);
             return true;
         } else {
@@ -209,25 +211,31 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
     }
 
     // TODO Change color when connected
-    public boolean isVehicleConnected() {
-        mVehicleIndicator.setBackgroundResource(R.color.flat_red2);
-        return false;
+    public boolean setVehicleConnectedStateColor() {
+        if (BluetoothStaticObject.getConnectedState()) {
+            mVehicleIndicator.setBackgroundResource(R.color.flat_green);
+            return true;
+        } else {
+            mVehicleIndicator.setBackgroundResource(R.color.flat_red2);
+            return false;
+        }
     }
-
 
     @Override
-    public void connectToBTSocket(BluetoothDevice device) {
-        final ConnectThread mConnectThread = new ConnectThread(device);
-//        Handler handler = new Handler();
-//        Runnable runnable = new Runnable() {
-//            @Override
-//            public void run() {
-//                mAcceptThread.run();
-//            }
-//        };
-//        handler.post(runnable);
-        mConnectThread.start();
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == BluetoothStaticObject.REQUEST_ENABLE_BT) {
+            if (resultCode == RESULT_OK) {
+                Toast.makeText(this, "Bluetooth Enabled", Toast.LENGTH_SHORT).show();
+            } else if (resultCode == RESULT_CANCELED) {
+                Toast.makeText(this, "Request Cancelled", Toast.LENGTH_SHORT).show();
+            }
+        } else if (requestCode == BluetoothStaticObject.REQUEST_DISCOVERABLE) {
+            if (resultCode == RESULT_CANCELED) {
+                Toast.makeText(this, "Request Cancelled", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this,
+                        "Finished Searching in " + resultCode + " seconds.", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
-
-
 }

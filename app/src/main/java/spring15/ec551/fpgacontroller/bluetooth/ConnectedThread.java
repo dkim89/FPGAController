@@ -7,11 +7,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import spring15.ec551.fpgacontroller.activities.MainActivity;
+
 /**
  * Created by davidkim on 4/30/15.
  */
 public class ConnectedThread extends Thread {
-    private static final int MESSAGE_READ = 000000;
+
     private final BluetoothSocket mmSocket;
     private final InputStream mmInStream;
     private final OutputStream mmOutStream;
@@ -27,7 +29,9 @@ public class ConnectedThread extends Thread {
         try {
             tmpIn = socket.getInputStream();
             tmpOut = socket.getOutputStream();
-        } catch (IOException e) { }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         mmInStream = tmpIn;
         mmOutStream = tmpOut;
@@ -43,7 +47,7 @@ public class ConnectedThread extends Thread {
                 // Read from the InputStream
                 bytes = mmInStream.read(buffer);
                 // Send the obtained bytes to the UI activity
-                mHandler.obtainMessage(MESSAGE_READ, bytes, -1, buffer)
+                mHandler.obtainMessage(MainActivity.BluetoothStaticObject.READ_MESSAGE, bytes, -1, buffer)
                         .sendToTarget();
             } catch (IOException e) {
                 break;
@@ -52,7 +56,17 @@ public class ConnectedThread extends Thread {
     }
 
     /* Call this from the main activity to send data to the remote device */
+    public void write(int one_byte) {
+            try {
+                mmOutStream.write(one_byte);
+            } catch (IOException e) {
+
+            }
+    }
+
+
     public void write(byte[] bytes) {
+        byte[] buffer = new byte[1];
         try {
             mmOutStream.write(bytes);
         } catch (IOException e) { }

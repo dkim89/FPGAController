@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
+
 import java.text.DecimalFormat;
 import spring15.ec551.fpgacontroller.R;
 import spring15.ec551.fpgacontroller.accelerometer.ControllerInterfaceListener;
@@ -27,11 +28,24 @@ import spring15.ec551.fpgacontroller.resources.ThrottleSlider;
    * be able to communicate with each other.  This is used for Free Roam, but should
    * be extended for New Game mode where opponent information and game settings need to be initialized.
    */
-    public class PlayFragment extends Fragment implements ControllerInterfaceListener {
+public class PlayFragment extends Fragment implements ControllerInterfaceListener {
+
     final int MAX_AMMO = 50;
     final int RELOAD_DELAY = 3;
     final int QUARTER_SEC = 250;    // 0.25 second
     final int TENTH_SEC = 100;      // 0.10 second
+
+    enum Throttle_State {
+        STOP, BACK, FORWARD
+    }
+
+    enum Steering_State {
+        NEUTRAL, LEFT, RIGHT
+    }
+
+    enum Laser_State {
+        FIRE_ZE_LAZERS, NO_FIRE
+    }
 
     Context mContext;
     FragmentActionListener mListener;
@@ -61,19 +75,33 @@ import spring15.ec551.fpgacontroller.resources.ThrottleSlider;
 
     DecimalFormat speedDecimalFormat;
 
+    // Debug
+    CustomTextView mySignalText;
+    CustomTextView vehicleSignalText;
+
+    static Throttle_State throttle_state;
+    static Steering_State steering_state;
+    static Laser_State laser_state;
+    Handler mHandler;
+    Runnable r;
+
     public static PlayFragment newInstance() {
         return new PlayFragment();
     }
 
-    public PlayFragment() {}
+    public PlayFragment() {
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        MainActivity.ControllerObject.setInterface(this);
+        MainActivity.ControllerStaticObject.setInterface(this);
         speedDecimalFormat = new DecimalFormat("+###;-###");
         mLaserHandler = new Handler();
+        throttle_state = Throttle_State.STOP;
+        steering_state = Steering_State.NEUTRAL;
+        laser_state = Laser_State.NO_FIRE;
     }
 
     @Override
@@ -94,7 +122,15 @@ import spring15.ec551.fpgacontroller.resources.ThrottleSlider;
         mThrottleSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-              mThrottleSpeed.setText(speedDecimalFormat.format(progress - ThrottleSlider.MID_PROGRESS) + "%");
+                mThrottleSpeed.setText(speedDecimalFormat.format(progress - ThrottleSlider.MID_PROGRESS) + "%");
+                int speed = progress - ThrottleSlider.MID_PROGRESS;
+                if (speed == 0) {
+                    throttle_state = Throttle_State.STOP;
+                } else if (speed > 0) {
+                    throttle_state = Throttle_State.FORWARD;
+                } else {
+                    throttle_state = Throttle_State.STOP;
+                }
             }
 
             @Override
@@ -113,7 +149,7 @@ import spring15.ec551.fpgacontroller.resources.ThrottleSlider;
         mAmmoTextView = (CustomTextView) view.findViewById(R.id.current_ammo);
         mFireHud = (LinearLayout) view.findViewById(R.id.fire_hud);
         mAmmoSlider = (AmmoSlider) view.findViewById(R.id.ammo_bar);
-        initializeLasers(MAX_AMMO,RELOAD_DELAY);
+        initializeLasers(MAX_AMMO, RELOAD_DELAY);
 
         mReloadButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -152,10 +188,27 @@ import spring15.ec551.fpgacontroller.resources.ThrottleSlider;
             }
         });
 
+
+//        r = new Runnable() {
+//            @Override
+//            public void run() {
+//                if (MainActivity.connectedThread != null) {
+//                    System.out.println("AAA");
+//                    MainActivity.connectedThread.write(sendInstruction());
+//                    mHandler.postDelayed(r, 20);
+//                }
+//            }
+//        };
+//            mHandler = new Handler();
+//            mHandler.postDelayed(r, 20);
+
+        mListener.startreceivinginputs(true);
         return view;
     }
 
-    /** Initialize Lasers - Invoked in the UI thread*/
+    /**
+     * Initialize Lasers - Invoked in the UI thread
+     */
     private void initializeLasers(int maxAmmo, int reloadDelay) {
         this.mMaxAmmo = maxAmmo;
         this.mCurrentAmmo = maxAmmo;
@@ -165,7 +218,9 @@ import spring15.ec551.fpgacontroller.resources.ThrottleSlider;
         mAmmoSlider.initializeAmmo(MAX_AMMO);
     }
 
-    /** Registers first shot - 0.1 delay */
+    /**
+     * Registers first shot - 0.1 delay
+     */
     private void firstBlood() {
         mUIRunnable = new Runnable() {
             @Override
@@ -188,8 +243,9 @@ import spring15.ec551.fpgacontroller.resources.ThrottleSlider;
             mLaserHandler.postDelayed(mUIRunnable, TENTH_SEC);
     }
 
-    /** Register the second consecutive fire that is 0.25 seconds apart.
-     *  Following this, the laser will be shot every 0.1 seconds.
+    /**
+     * Register the second consecutive fire that is 0.25 seconds apart.
+     * Following this, the laser will be shot every 0.1 seconds.
      */
     private void firstBloodPartII() {
         mUIRunnable = new Runnable() {
@@ -213,7 +269,9 @@ import spring15.ec551.fpgacontroller.resources.ThrottleSlider;
             mLaserHandler.postDelayed(mUIRunnable, QUARTER_SEC);
     }
 
-    /** Automatic mode (fires every 0.1 second) */
+    /**
+     * Automatic mode (fires every 0.1 second)
+     */
     private void ramboMode() {
         if (isAmmoEmpty())
             reload();
@@ -221,15 +279,16 @@ import spring15.ec551.fpgacontroller.resources.ThrottleSlider;
             mLaserHandler.postDelayed(mUIRunnable, TENTH_SEC);
     }
 
-    /** Will shoot laser and update UI in addition to ammo count.
-     *  This method is invoked at the UI Thread.
+    /**
+     * Will shoot laser and update UI in addition to ammo count.
+     * This method is invoked at the UI Thread.
      */
     private void shootLaser() {
-      if (!isAmmoEmpty()) {
-          mCurrentAmmo -= 1;
-          mAmmoTextView.setText(mCurrentAmmo + "/" + mMaxAmmo);
-          mAmmoSlider.setProgress(mCurrentAmmo);
-      }
+        if (!isAmmoEmpty()) {
+            mCurrentAmmo -= 1;
+            mAmmoTextView.setText(mCurrentAmmo + "/" + mMaxAmmo);
+            mAmmoSlider.setProgress(mCurrentAmmo);
+        }
 
     }
 
@@ -241,7 +300,9 @@ import spring15.ec551.fpgacontroller.resources.ThrottleSlider;
         mLaserHandler.removeCallbacksAndMessages(null);
     }
 
-    /** Begin Reloading */
+    /**
+     * Begin Reloading
+     */
     private void reload() {
         isReloading = true;
         clearCallbacks();
@@ -251,10 +312,13 @@ import spring15.ec551.fpgacontroller.resources.ThrottleSlider;
         mFireButton.setBackgroundResource(R.drawable.fire_button_active);
         mReloadButton.setBackgroundResource(R.drawable.reload_button_active);
         mAmmoTextView.setText("Reloading");
+        laser_state = Laser_State.NO_FIRE;
         mAmmoSlider.startReload();
     }
 
-    /** Reloading Complete */
+    /**
+     * Reloading Complete
+     */
     public void finishReloading() {
         mCurrentAmmo = mMaxAmmo;
         mAmmoTextView.setText(mCurrentAmmo + "/" + mMaxAmmo);
@@ -268,43 +332,47 @@ import spring15.ec551.fpgacontroller.resources.ThrottleSlider;
     }
 
     private void fireButtonDown() {
-      mFireHud.setBackgroundColor(getResources().getColor(R.color.hud_red));
-      mFireButton.setBackgroundResource(R.drawable.fire_button_active);
+        mFireHud.setBackgroundColor(getResources().getColor(R.color.hud_red));
+        mFireButton.setBackgroundResource(R.drawable.fire_button_active);
+        laser_state = Laser_State.FIRE_ZE_LAZERS;
     }
 
     private void fireButtonUp() {
-      mFireHud.setBackgroundColor(getResources().getColor(R.color.hud_blue));
-      mFireButton.setBackgroundResource(R.drawable.fire_button_initial);
+        mFireHud.setBackgroundColor(getResources().getColor(R.color.hud_blue));
+        mFireButton.setBackgroundResource(R.drawable.fire_button_initial);
+        laser_state = Laser_State.NO_FIRE;
     }
 
     @Override
     public void onAttach(Activity activity) {
-      super.onAttach(activity);
-      mContext = activity;
-      mListener = (FragmentActionListener) activity;
+        super.onAttach(activity);
+        mContext = activity;
+        mListener = (FragmentActionListener) activity;
     }
 
     @Override
     public void onStart() {
-      super.onStart();
-      if (MainActivity.ControllerObject != null)
-          MainActivity.ControllerObject.registerSensor();
+        super.onStart();
+        if (MainActivity.ControllerStaticObject != null)
+            MainActivity.ControllerStaticObject.registerSensor();
     }
 
     @Override
     public void onStop() {
-      super.onStop();
-      if (MainActivity.ControllerObject != null)
-          MainActivity.ControllerObject.unregisterSensor();
+        super.onStop();
+        if (MainActivity.ControllerStaticObject != null)
+            MainActivity.ControllerStaticObject.unregisterSensor();
     }
 
     @Override
     public void onDetach() {
-      super.onDetach();
-      mListener = null;
+        super.onDetach();
+        mListener = null;
     }
 
-    /** Steering */
+    /**
+     * Steering
+     */
     @Override
     public void onBaseChangedListener(float[] baseValues) {
 
@@ -318,12 +386,75 @@ import spring15.ec551.fpgacontroller.resources.ThrottleSlider;
     @Override
     public void onAngleChangeListener(int angleValue) {
         mSteeringIcon.setRotation(angleValue);
-//        if (angleValue < 0) {
-//            mLeftAngle.setText((angleValue*-1) + "\u00B0");
-//            mRightAngle.setText("0"+ "\u00B0");
-//        } else {
-//            mLeftAngle.setText("0" + "\u00B0");
-//            mRightAngle.setText(angleValue + "\u00B0");
-//        }
+        if (angleValue < 0) {
+            steering_state = Steering_State.LEFT;
+        } else if (angleValue > 0) {
+            steering_state = Steering_State.RIGHT;
+        } else {
+            steering_state = Steering_State.NEUTRAL;
+        }
+    }
+
+    //
+    public byte sendInstruction() {
+        if (laser_state == Laser_State.NO_FIRE) {
+            switch (throttle_state) {
+                case STOP:
+                    if (steering_state == Steering_State.NEUTRAL) {
+                        return 0x00;
+                    } else if (steering_state == Steering_State.RIGHT) {
+                        return 0x02;
+                    } else {
+                        return 0x01;
+                    }
+
+                case FORWARD:
+                    if (steering_state == Steering_State.NEUTRAL) {
+                        return 0x08;
+                    } else if (steering_state == Steering_State.RIGHT) {
+                        return 0x0A;
+                    } else {
+                        return 0x09;
+                    }
+                case BACK:
+                    if (steering_state == Steering_State.NEUTRAL) {
+                        return 0x04;
+                    } else if (steering_state == Steering_State.RIGHT) {
+                        return 0x06;
+                    } else {
+                        return 0x05;
+                    }
+            }
+        } else {
+            switch (throttle_state) {
+                case STOP:
+                    if (steering_state == Steering_State.NEUTRAL) {
+                        return 0x10;
+                    } else if (steering_state == Steering_State.RIGHT) {
+                        return 0x12;
+                    } else {
+                        return 0x11;
+                    }
+                case FORWARD:
+                    if (steering_state == Steering_State.NEUTRAL) {
+                        return 0x18;
+                    } else if (steering_state == Steering_State.RIGHT) {
+                        return 0x1A;
+                    } else {
+                        return 0x19;
+                    }
+                case BACK:
+                    if (steering_state == Steering_State.NEUTRAL) {
+                        return 0x14;
+                    } else if (steering_state == Steering_State.RIGHT) {
+                        return 0x16;
+                    } else {
+                        return 0x15;
+                    }
+                default:
+                    return 0x00;
+            }
+        }
+        return 0x00;
     }
 }
