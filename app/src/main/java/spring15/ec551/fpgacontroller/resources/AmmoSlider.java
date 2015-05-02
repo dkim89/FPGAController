@@ -79,7 +79,9 @@ public class AmmoSlider extends ProgressBar{
         setProgressDrawable(getResources().getDrawable(R.drawable.ammo_seekbar));
         setMax(mMaxAmmo);
         setProgress(mMaxAmmo);
-        PlayFragment fragment = (PlayFragment)((MainActivity) mContext).getFragmentManager().findFragmentByTag(MainActivity.FREE_ROAM_FRAGMENT);
+        PlayFragment fragment =
+                (PlayFragment)(((MainActivity) mContext).getFragmentManager().findFragmentByTag(MainActivity.FREE_ROAM_FRAGMENT));
+
         fragment.finishReloading();
     }
 

@@ -64,7 +64,8 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
         mListView.setOnItemClickListener(this);
 
         mListener.adjustActivityForMainMenu();
-
+        mListener.updateControllerSavedStateDisplay();
+        mListener.updateVehicleConnectedSavedStateDisplay();
         return view;
     }
 

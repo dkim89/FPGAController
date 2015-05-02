@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 import spring15.ec551.fpgacontroller.R;
 import spring15.ec551.fpgacontroller.accelerometer.ControllerInterfaceListener;
@@ -35,17 +36,16 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
     final int QUARTER_SEC = 250;    // 0.25 second
     final int TENTH_SEC = 100;      // 0.10 second
 
-    enum Throttle_State {
-        STOP, BACK, FORWARD
-    }
+    final int STOP = 0;
+    final int BACK = 4;
+    final int FORWARD = 8;
 
-    enum Steering_State {
-        NEUTRAL, LEFT, RIGHT
-    }
+    final int NEUTRAL = 0;
+    final int LEFT = 1;
+    final int RIGHT = 2;
 
-    enum Laser_State {
-        FIRE_ZE_LAZERS, NO_FIRE
-    }
+    final int NO_FIRE = 0;
+    final int FIRE_ZE_LAZERS = 16;
 
     Context mContext;
     FragmentActionListener mListener;
@@ -79,11 +79,10 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
     CustomTextView mySignalText;
     CustomTextView vehicleSignalText;
 
-    static Throttle_State throttle_state;
-    static Steering_State steering_state;
-    static Laser_State laser_state;
-    Handler mHandler;
-    Runnable r;
+    static int throttle_state;
+    static int steering_state;
+    static int laser_state;
+    boolean allowOutput;
 
     public static PlayFragment newInstance() {
         return new PlayFragment();
@@ -99,16 +98,19 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
         MainActivity.ControllerStaticObject.setInterface(this);
         speedDecimalFormat = new DecimalFormat("+###;-###");
         mLaserHandler = new Handler();
-        throttle_state = Throttle_State.STOP;
-        steering_state = Steering_State.NEUTRAL;
-        laser_state = Laser_State.NO_FIRE;
+        throttle_state = STOP;
+        steering_state = NEUTRAL;
+        laser_state = NO_FIRE;
+        allowOutput = false;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_free_roam, container, false);
 
-        mListener.adjustActivityForPlay();
+//        mListener.adjustActivityForPlay();
+
+        mListener.adjustActivityForSettings();
 
         // Steering
         mSteeringIcon = (ImageView) view.findViewById(R.id.steering_rotating_icon);
@@ -125,11 +127,11 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
                 mThrottleSpeed.setText(speedDecimalFormat.format(progress - ThrottleSlider.MID_PROGRESS) + "%");
                 int speed = progress - ThrottleSlider.MID_PROGRESS;
                 if (speed == 0) {
-                    throttle_state = Throttle_State.STOP;
+                    throttle_state = STOP;
                 } else if (speed > 0) {
-                    throttle_state = Throttle_State.FORWARD;
+                    throttle_state = FORWARD;
                 } else {
-                    throttle_state = Throttle_State.STOP;
+                    throttle_state = BACK;
                 }
             }
 
@@ -188,21 +190,8 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
             }
         });
 
-
-//        r = new Runnable() {
-//            @Override
-//            public void run() {
-//                if (MainActivity.connectedThread != null) {
-//                    System.out.println("AAA");
-//                    MainActivity.connectedThread.write(sendInstruction());
-//                    mHandler.postDelayed(r, 20);
-//                }
-//            }
-//        };
-//            mHandler = new Handler();
-//            mHandler.postDelayed(r, 20);
-
-        mListener.startreceivinginputs(true);
+        sendInstructions();
+        allowOutput = true;
         return view;
     }
 
@@ -305,6 +294,7 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
      */
     private void reload() {
         isReloading = true;
+        laser_state = NO_FIRE;
         clearCallbacks();
         mReloadButton.setClickable(false);
         mFireButton.setClickable(false);
@@ -312,7 +302,6 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
         mFireButton.setBackgroundResource(R.drawable.fire_button_active);
         mReloadButton.setBackgroundResource(R.drawable.reload_button_active);
         mAmmoTextView.setText("Reloading");
-        laser_state = Laser_State.NO_FIRE;
         mAmmoSlider.startReload();
     }
 
@@ -334,13 +323,13 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
     private void fireButtonDown() {
         mFireHud.setBackgroundColor(getResources().getColor(R.color.hud_red));
         mFireButton.setBackgroundResource(R.drawable.fire_button_active);
-        laser_state = Laser_State.FIRE_ZE_LAZERS;
+        laser_state = FIRE_ZE_LAZERS;
     }
 
     private void fireButtonUp() {
         mFireHud.setBackgroundColor(getResources().getColor(R.color.hud_blue));
         mFireButton.setBackgroundResource(R.drawable.fire_button_initial);
-        laser_state = Laser_State.NO_FIRE;
+        laser_state = NO_FIRE;
     }
 
     @Override
@@ -362,6 +351,7 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
         super.onStop();
         if (MainActivity.ControllerStaticObject != null)
             MainActivity.ControllerStaticObject.unregisterSensor();
+
     }
 
     @Override
@@ -386,16 +376,43 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
     @Override
     public void onAngleChangeListener(int angleValue) {
         mSteeringIcon.setRotation(angleValue);
-        if (angleValue < 0) {
-            steering_state = Steering_State.LEFT;
-        } else if (angleValue > 0) {
-            steering_state = Steering_State.RIGHT;
+        if (angleValue < 10) {
+            steering_state = LEFT;
+        } else if (angleValue > 10) {
+            steering_state = RIGHT;
         } else {
-            steering_state = Steering_State.NEUTRAL;
+            steering_state = NEUTRAL;
         }
     }
 
-    //
+    public void sendInstructions() {
+        final Handler handler = new Handler();
+
+        final Runnable outputRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (allowOutput) {
+                    byte b = (byte) (throttle_state + laser_state + steering_state);
+                    MainActivity.BluetoothStaticObject.sendByte(b);
+                }
+                handler.postDelayed(this, 100);
+            }
+        };
+        handler.postDelayed(outputRunnable, 100);
+
+//        Thread sendThread = new Thread(outputRunnable);
+//        sendThread.start();
+    }
+
+    public void resumeSending() {
+        allowOutput = true;
+    }
+
+    public void pauseSending() {
+        allowOutput = false;
+    }
+
+    /*
     public byte sendInstruction() {
         if (laser_state == Laser_State.NO_FIRE) {
             switch (throttle_state) {
@@ -457,4 +474,6 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
         }
         return 0x00;
     }
+    */
 }
+

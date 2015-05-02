@@ -44,15 +44,19 @@ public class BluetoothObject {
     BluetoothAdapter mBTAdapter;
     ConnectedThread mConnectedThread;
     Set<BluetoothDevice> mPairedDevices;
+    ArrayList<BluetoothDevice> mConnectedDevices;
+    BluetoothConnectionStateListener mConnectionStateListener;
 
     Context mContext;
 
     // Status of whether bluetooth controller is connected
     private boolean isConnected;
+    private boolean allowSendingData;
 
     public BluetoothObject(Context context) {
         mContext = context;
         isConnected = false;
+        allowSendingData = false;
 
         mBTAdapter = BluetoothAdapter.getDefaultAdapter();
     }
@@ -135,18 +139,22 @@ public class BluetoothObject {
                 foundDevices.add(device);
             } else if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                mConnectedDevices = new ArrayList<>();
+                mConnectedDevices.add(device);
                 isConnected = true;
-                Toast.makeText(mContext, "Connected Device.", Toast.LENGTH_LONG).show();
+                if (mConnectionStateListener != null)
+                    mConnectionStateListener.onConnectedDeviceUpdate(mConnectedDevices);
+                Toast.makeText(mContext, "Connected Device " + device.getName(), Toast.LENGTH_LONG).show();
             }
         }
     };
 
     /** Returns state of whether vehicle has been connected or not (after attempting connection). */
-    public boolean getConnectedState() {
+    public boolean getConnectedSockets() {
         return isConnected;
     }
 
-    public void connectToBTAsClient(BluetoothDevice device, UUID uuid) {
+    public void connectToBTasClient(BluetoothDevice device, UUID uuid) {
         final ConnectThread connectThread = new ConnectThread(device, uuid);
         connectThread.start();
     }
@@ -156,15 +164,25 @@ public class BluetoothObject {
             mConnectedThread = new ConnectedThread(socket);
             mConnectedThread.start();
         }
+
     }
 
     public void closeIOStream() {
         mConnectedThread.cancel();
     }
 
-    public void sendByte(int one_byte) {
+    public void sendByte(byte one_byte) {
         mConnectedThread.write(one_byte);
     }
+
+    public void setConnectionStateListener(BluetoothConnectionStateListener listener) {
+        mConnectionStateListener = listener;
+    }
+
+    public interface BluetoothConnectionStateListener {
+        public void onConnectedDeviceUpdate(ArrayList<BluetoothDevice> list);
+    }
+
 
 
 //    @Override
@@ -177,26 +195,9 @@ public class BluetoothObject {
 //        if (b) {
 //            Message msg = new Message();
 //            fragment = (PlayFragment) getFragmentManager().findFragmentByTag(FREE_ROAM_FRAGMENT);
-//            mHandler = new Handler();
-//
-//
-//            r = new Runnable() {
-//                @Override
-//                public void run() {
-//                    if (MainActivity.connectedThread != null) {
-//                        MainActivity.connectedThread.write(fragment.sendInstruction());
-//
-//                        mHandler.postDelayed(r, 40);
-//                    }
-//                }
-//            };
-//            mHandler = new Handler();
-//            mHandler.postDelayed(r, 40);
+
 //
 //        }
 //    }
-
-
-
 
 }

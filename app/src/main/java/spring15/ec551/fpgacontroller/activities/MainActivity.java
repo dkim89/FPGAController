@@ -1,11 +1,9 @@
 package spring15.ec551.fpgacontroller.activities;
 
 import android.app.FragmentTransaction;
-import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -15,8 +13,6 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-
-import java.util.UUID;
 
 import spring15.ec551.fpgacontroller.R;
 import spring15.ec551.fpgacontroller.accelerometer.ControllerObject;
@@ -36,7 +32,7 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
     final String EXAMINE_ACCEL_FRAGMENT = "EXAMINE_ACCEL_FRAGMENT";
     final String CONTROLLER_SETTINGS_FRAGMENT = "CONTROLLER_SETTINGS_FRAGMENT";
     final String VEHICLE_SETTINGS_FRAGMENT = "VEHICLE_SETTINGS_FRAGMENT";
-    final String FREE_ROAM_FRAGMENT = "FREE_ROAM_FRAGMENT";
+    public static final String FREE_ROAM_FRAGMENT = "FREE_ROAM_FRAGMENT";
 
     // Controller object that is used throughout the application.
     public static ControllerObject ControllerStaticObject;
@@ -196,6 +192,11 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
         setControllerConfigureStateColor();
     }
 
+    @Override
+    public void updateVehicleConnectedSavedStateDisplay() {
+        setVehicleConnectedStateColor();
+    }
+
     /** Checks for the status of controller (connection).  Will update color status
      *  and can also be used to return a boolean value of status
      *  @return true if configured.
@@ -210,9 +211,8 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
         }
     }
 
-    // TODO Change color when connected
     public boolean setVehicleConnectedStateColor() {
-        if (BluetoothStaticObject.getConnectedState()) {
+        if (BluetoothStaticObject.getConnectedSockets()) {
             mVehicleIndicator.setBackgroundResource(R.color.flat_green);
             return true;
         } else {
@@ -237,5 +237,13 @@ public class MainActivity extends ActionBarActivity implements FragmentActionLis
                         "Finished Searching in " + resultCode + " seconds.", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (BluetoothStaticObject.getConnectedSockets()) {
+            BluetoothStaticObject.closeIOStream();
+        }
+        super.onDestroy();
     }
 }

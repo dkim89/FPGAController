@@ -20,8 +20,8 @@ public class MenuAdapter extends ArrayAdapter<String> {
     Context mContext;
     LayoutInflater mLayoutInflator;
 
-    /** To prevent any attempts to load a null user mListOfDevices,
-     *  the constructor will check the mListOfDevices and only assign if it
+    /** To prevent any attempts to load a null user mPairedList,
+     *  the constructor will check the mPairedList and only assign if it
      *  isn't null. */
     public MenuAdapter(Context context, ArrayList<String> list) {
         super(context, 0);
@@ -50,7 +50,7 @@ public class MenuAdapter extends ArrayAdapter<String> {
     }
 
     /** Called upon a sucessful server response.  This will
-     *  assign the new values to the fragment mListOfDevices, then invoke a refresh
+     *  assign the new values to the fragment mPairedList, then invoke a refresh
      *  call.
      */
     public void updateList(ArrayList<String> users) {

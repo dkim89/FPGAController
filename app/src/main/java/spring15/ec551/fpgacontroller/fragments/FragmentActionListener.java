@@ -11,6 +11,8 @@ public interface FragmentActionListener {
     /** Invoke an update to saved configuration state of controller */
     public void updateControllerSavedStateDisplay();
 
+    public void updateVehicleConnectedSavedStateDisplay();
+
     public void adjustActivityForMainMenu();
 
     public void adjustActivityForSettings();

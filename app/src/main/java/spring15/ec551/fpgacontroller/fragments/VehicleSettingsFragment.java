@@ -20,17 +20,22 @@ import java.util.UUID;
 
 import spring15.ec551.fpgacontroller.R;
 import spring15.ec551.fpgacontroller.activities.MainActivity;
+import spring15.ec551.fpgacontroller.bluetooth.BluetoothObject;
 
 /** Sets up the BluetoothController Object for connectivity with Controller */
-public class VehicleSettingsFragment extends Fragment {
+public class VehicleSettingsFragment extends Fragment implements BluetoothObject.BluetoothConnectionStateListener{
     UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
 
     Context mContext;
     Button On,Off,Visible, listPairedDevices;
-    ListView mListView;
-    ArrayAdapter mListAdapter;
-    List<String> mListOfDevices;
+    ListView mPairedListView;
+    ListView mConnectedListView;
+    ArrayAdapter mPairedAdapter;
+    ArrayAdapter mConnectedAdapter;
+    List<String> mPairedList;
+    List<String> mConnectedList;
     ArrayList<BluetoothDevice> pairedDevices;
+    ArrayList<BluetoothDevice> connectedDevices;
 
     private FragmentActionListener mListener;
 
@@ -53,7 +58,8 @@ public class VehicleSettingsFragment extends Fragment {
             // Get arguments
         }
 
-        mListOfDevices = new ArrayList<>();
+        mPairedList = new ArrayList<>();
+        mConnectedList = new ArrayList<>();
         MainActivity.BluetoothStaticObject.registerReceivers();
 
     }
@@ -67,10 +73,15 @@ public class VehicleSettingsFragment extends Fragment {
         Visible = (Button) v.findViewById(R.id.button2);
         listPairedDevices = (Button) v.findViewById(R.id.button3);
         Off = (Button) v.findViewById(R.id.button4);
-        mListView = (ListView)v.findViewById(R.id.listView1);
-        mListAdapter = new ArrayAdapter<>(mContext, R.layout.list_item, mListOfDevices);
-        mListView.setAdapter(mListAdapter);
+        mPairedListView = (ListView)v.findViewById(R.id.paired_devices);
+        mPairedAdapter = new ArrayAdapter<>(mContext, R.layout.list_item, mPairedList);
+        mPairedListView.setAdapter(mPairedAdapter);
+        mConnectedListView = (ListView)v.findViewById(R.id.connected_devices);
+        mConnectedAdapter = new ArrayAdapter<>(mContext, R.layout.list_item, mConnectedList);
+        mConnectedListView.setAdapter(mConnectedAdapter);
         mListener.adjustActivityForSettings();
+        MainActivity.BluetoothStaticObject.setConnectionStateListener(this);
+
 
         On.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,28 +111,41 @@ public class VehicleSettingsFragment extends Fragment {
                         MainActivity.BluetoothStaticObject.queryPairedDevices();
 
                 for(BluetoothDevice bt : pairedDevices) {
-                    mListOfDevices.add(bt.getName());
+                    mPairedList.add(bt.getName());
                 }
 
-                mListAdapter.notifyDataSetChanged();
+                mPairedAdapter.notifyDataSetChanged();
 
                 Toast.makeText(mContext, "Showing Paired Devices",
                         Toast.LENGTH_SHORT).show();
             }
         });
 
-        mListView.setOnItemClickListener(
+        mPairedListView.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        String s = mListOfDevices.get(position);
+                        String s = mPairedList.get(position);
                         for (BluetoothDevice bt : pairedDevices) {
                             if (s.equals(bt.getName())) {
-                                MainActivity.BluetoothStaticObject.connectToBTAsClient(bt, uuid);
+                                MainActivity.BluetoothStaticObject.connectToBTasClient(bt, uuid);
                             }
                         }
                     }
                 });
+
+        mConnectedListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                String s = mConnectedList.get(position);
+                for (BluetoothDevice bt : connectedDevices) {
+                    if (s.equals(bt.getName())) {
+                        MainActivity.BluetoothStaticObject.closeIOStream();
+                    }
+                }
+                return true;
+            }
+        });
 
         return v;
     }
@@ -145,4 +169,12 @@ public class VehicleSettingsFragment extends Fragment {
         MainActivity.BluetoothStaticObject.unregisterReceivers();
     }
 
+    @Override
+    public void onConnectedDeviceUpdate(ArrayList<BluetoothDevice> list) {
+        connectedDevices = list;
+        for (BluetoothDevice bt: connectedDevices) {
+            mConnectedList.add(bt.getName());
+        }
+        mConnectedAdapter.notifyDataSetChanged();
+    }
 }

@@ -108,7 +108,6 @@ public class CalibrateControllerFragment extends Fragment implements ControllerI
             @Override
             public void onClick(View v) {
                 MainActivity.ControllerStaticObject.setConfiguredState(true);
-                mListener.updateControllerSavedStateDisplay();
                 completeConfiguration();
             }
         });
