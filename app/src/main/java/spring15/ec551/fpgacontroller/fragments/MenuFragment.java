@@ -8,10 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import spring15.ec551.fpgacontroller.R;
+import spring15.ec551.fpgacontroller.activities.MainActivity;
 
 /** TODO
  */
@@ -118,7 +120,11 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
                 // TODO
                 break;
             case FREE_ROAM:
-                mListener.onMenuItemClickListener(FREE_ROAM);
+                if (MainActivity.BluetoothStaticObject.getConnectedSockets()) {
+                    mListener.onMenuItemClickListener(FREE_ROAM);
+                } else {
+                    Toast.makeText(mContext, "Vehicle Not Connected", Toast.LENGTH_LONG).show();
+                }
                 break;
             case SETTINGS:
                 initializeSettingsMenu();

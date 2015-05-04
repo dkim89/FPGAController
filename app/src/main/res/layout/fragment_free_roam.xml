@@ -89,7 +89,47 @@
                 android:adjustViewBounds="true" />
         </RelativeLayout>
 
-        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ms_control"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/hud_margin"
+        android:layout_marginStart="@dimen/hud_margin"
+        android:layout_marginBottom="@dimen/hud_margin"
+        android:padding="@dimen/hud_padding"
+        android:orientation="vertical"
+        android:layout_toRightOf="@id/steering_hud"
+        android:layout_toEndOf="@id/steering_hud"
+        android:layout_alignParentBottom="true"
+        android:background="@color/hud_blue">
+        <Button
+            android:id="@+id/ms_increase"
+            android:layout_width="@dimen/button_size"
+            android:layout_height="@dimen/button_size"
+            android:background="@drawable/button_up_selector"
+            android:layout_marginBottom="@dimen/vector_margin"/>
+        <Button
+            android:id="@+id/ms_decrease"
+            android:layout_width="@dimen/button_size"
+            android:layout_height="@dimen/button_size"
+            android:background="@drawable/button_down_selector" />
+
+    </LinearLayout>
+
+    <spring15.ec551.fpgacontroller.resources.CustomTextView
+        android:id="@+id/ms_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/hud_margin"
+        android:layout_marginStart="@dimen/hud_margin"
+        android:layout_marginBottom="@dimen/hud_margin"
+        android:layout_toRightOf="@id/ms_control"
+        android:layout_toEndOf="@id/ms_control"
+        android:textSize="@dimen/steering_text_size"
+        android:layout_alignParentBottom="true" >
+    </spring15.ec551.fpgacontroller.resources.CustomTextView>
     <!--<RelativeLayout-->
     <!--android:layout_width="match_parent"-->
     <!--android:layout_height="wrap_content">-->

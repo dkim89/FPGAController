@@ -3,8 +3,11 @@ package spring15.ec551.fpgacontroller.fragments;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,6 +19,9 @@ import android.widget.SeekBar;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+
 import spring15.ec551.fpgacontroller.R;
 import spring15.ec551.fpgacontroller.accelerometer.ControllerInterfaceListener;
 import spring15.ec551.fpgacontroller.activities.MainActivity;
@@ -40,12 +46,14 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
     final int BACK = 4;
     final int FORWARD = 8;
 
-    final int NEUTRAL = 0;
+    final int NEUTRAL = 3;
     final int LEFT = 1;
     final int RIGHT = 2;
 
     final int NO_FIRE = 0;
     final int FIRE_ZE_LAZERS = 16;
+
+    int RATE_OF_OUTPUT_SIGNAL = 20;   // in milliseconds
 
     Context mContext;
     FragmentActionListener mListener;
@@ -72,6 +80,10 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
     int mMaxAmmo;
     int mCurrentAmmo;
     int mReloadDelay;
+
+    Button mIncreaseRate;
+    Button mDecreaseRate;
+    CustomTextView mRateText;
 
     DecimalFormat speedDecimalFormat;
 
@@ -190,8 +202,29 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
             }
         });
 
+        // Output signal rate
+        mRateText = (CustomTextView) view.findViewById(R.id.ms_text);
+        mRateText.setText("" + RATE_OF_OUTPUT_SIGNAL + " ms");
+        mIncreaseRate = (Button) view.findViewById(R.id.ms_increase);
+        mDecreaseRate = (Button) view.findViewById(R.id.ms_decrease);
+        mIncreaseRate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RATE_OF_OUTPUT_SIGNAL += 1;
+                mRateText.setText("" + RATE_OF_OUTPUT_SIGNAL + " ms");
+            }
+        });
+        mDecreaseRate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RATE_OF_OUTPUT_SIGNAL -= 1;
+                mRateText.setText("" + RATE_OF_OUTPUT_SIGNAL + " ms");
+            }
+        });
+
         sendInstructions();
         allowOutput = true;
+        
         return view;
     }
 
@@ -274,6 +307,7 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
      */
     private void shootLaser() {
         if (!isAmmoEmpty()) {
+//            MainActivity.BluetoothStaticObject.sendByte(LEFT);
             mCurrentAmmo -= 1;
             mAmmoTextView.setText(mCurrentAmmo + "/" + mMaxAmmo);
             mAmmoSlider.setProgress(mCurrentAmmo);
@@ -376,32 +410,46 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
     @Override
     public void onAngleChangeListener(int angleValue) {
         mSteeringIcon.setRotation(angleValue);
-        if (angleValue < 10) {
+        if (angleValue < -10) {
+//            MainActivity.BluetoothStaticObject.sendByte(LEFT);
             steering_state = LEFT;
         } else if (angleValue > 10) {
+//            MainActivity.BluetoothStaticObject.sendByte(LEFT);
             steering_state = RIGHT;
         } else {
+//            MainActivity.BluetoothStaticObject.sendByte(NEUTRAL);
             steering_state = NEUTRAL;
         }
     }
 
     public void sendInstructions() {
+
         final Handler handler = new Handler();
 
         final Runnable outputRunnable = new Runnable() {
             @Override
             public void run() {
-                if (allowOutput) {
-                    byte b = (byte) (throttle_state + laser_state + steering_state);
+                /* Single Byte */
+                final int b = (throttle_state + laser_state + steering_state);
+                if (b != 0) {
                     MainActivity.BluetoothStaticObject.sendByte(b);
                 }
-                handler.postDelayed(this, 100);
+                handler.postDelayed(this, RATE_OF_OUTPUT_SIGNAL);
+
+                /*----------------*/
+
+                /* Byte Array
+                final int b = (throttle_state + laser_state + steering_state);
+                byte[] b_array = new byte[2];
+                b_array[0] = (byte) b;
+                b_array[1] = (byte) 1;
+                MainActivity.BluetoothStaticObject.sendBytes(b_array);
+                handler.postDelayed(this, 500);
+                /*----------------*/
             }
         };
-        handler.postDelayed(outputRunnable, 100);
 
-//        Thread sendThread = new Thread(outputRunnable);
-//        sendThread.start();
+        handler.postDelayed(outputRunnable, RATE_OF_OUTPUT_SIGNAL);
     }
 
     public void resumeSending() {
