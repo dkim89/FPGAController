@@ -42,6 +42,9 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
     final int QUARTER_SEC = 250;    // 0.25 second
     final int TENTH_SEC = 100;      // 0.10 second
 
+
+    final int ALL_STOP = 0;
+
     final int STOP = 0;
     final int BACK = 4;
     final int FORWARD = 8;
@@ -85,16 +88,14 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
     Button mDecreaseRate;
     CustomTextView mRateText;
 
-    DecimalFormat speedDecimalFormat;
+    Button mDisableSignal;
+    boolean allowOutput;
 
-    // Debug
-    CustomTextView mySignalText;
-    CustomTextView vehicleSignalText;
+    DecimalFormat speedDecimalFormat;
 
     static int throttle_state;
     static int steering_state;
     static int laser_state;
-    boolean allowOutput;
 
     public static PlayFragment newInstance() {
         return new PlayFragment();
@@ -222,9 +223,17 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
             }
         });
 
-        sendInstructions();
         allowOutput = true;
-        
+        mDisableSignal = (Button) view.findViewById(R.id.pause_signals);
+        mDisableSignal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                allowOutput = !allowOutput;
+            }
+        });
+
+        sendInstructions();
+
         return view;
     }
 
@@ -429,23 +438,25 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
         final Runnable outputRunnable = new Runnable() {
             @Override
             public void run() {
-                /* Single Byte */
-                final int b = (throttle_state + laser_state + steering_state);
-                if (b != 0) {
-                    MainActivity.BluetoothStaticObject.sendByte(b);
+                if (allowOutput) {
+                    /* Single Byte */
+                    final int b = (throttle_state + laser_state + steering_state);
+                    if (b != 0) {
+                        MainActivity.BluetoothStaticObject.sendByte(b);
+                    }
+                    handler.postDelayed(this, RATE_OF_OUTPUT_SIGNAL);
+
+                    /*----------------*/
+
+                    /* Byte Array
+                    final int b = (throttle_state + laser_state + steering_state);
+                    byte[] b_array = new byte[2];
+                    b_array[0] = (byte) b;
+                    b_array[1] = (byte) 1;
+                    MainActivity.BluetoothStaticObject.sendBytes(b_array);
+                    handler.postDelayed(this, 500);
+                    /*----------------*/
                 }
-                handler.postDelayed(this, RATE_OF_OUTPUT_SIGNAL);
-
-                /*----------------*/
-
-                /* Byte Array
-                final int b = (throttle_state + laser_state + steering_state);
-                byte[] b_array = new byte[2];
-                b_array[0] = (byte) b;
-                b_array[1] = (byte) 1;
-                MainActivity.BluetoothStaticObject.sendBytes(b_array);
-                handler.postDelayed(this, 500);
-                /*----------------*/
             }
         };
 

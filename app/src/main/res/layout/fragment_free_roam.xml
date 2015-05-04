@@ -208,4 +208,15 @@
          android:textSize="@dimen/ammo_text_size"
          android:gravity="center"/>
 
+    <Button
+        android:id="@+id/pause_signals"
+        android:layout_marginRight="@dimen/hud_margin"
+        android:layout_marginEnd="@dimen/hud_margin"
+        android:layout_marginTop="@dimen/hud_margin"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_width="@dimen/button_size"
+        android:layout_height="@dimen/button_size"
+        android:background="@drawable/reset_button_selector" />
+
  </RelativeLayout>
