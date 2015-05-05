@@ -20,14 +20,29 @@
              android:layout_width="wrap_content"
              android:layout_height="wrap_content"
              android:padding="@dimen/hud_padding"
+             android:orientation="vertical"
              android:background="@color/hud_blue">
 
-             <spring15.ec551.fpgacontroller.resources.ThrottleSlider
-                 android:id="@+id/throttle_slider"
-                 android:layout_width="wrap_content"
-                 android:layout_height="@dimen/throttle_bar_length"
-                 android:minHeight="@dimen/throttle_thickness"
-                 android:maxHeight="@dimen/throttle_thickness"/>
+             <Button
+                 android:id="@+id/throttle_forward"
+                 android:layout_width="@dimen/button_size"
+                 android:layout_height="@dimen/button_size"
+                 android:background="@drawable/button_up_selector"
+                 android:layout_marginBottom="5dp"/>
+
+             <Button
+                 android:id="@+id/throttle_stop"
+                 android:layout_width="@dimen/button_size"
+                 android:layout_height="@dimen/button_size"
+                 android:background="@drawable/stop_button"
+                 android:layout_marginBottom="5dp"/>
+
+             <Button
+                 android:id="@+id/throttle_backward"
+                 android:layout_width="@dimen/button_size"
+                 android:layout_height="@dimen/button_size"
+                 android:background="@drawable/button_down_selector" />
+
 
          </LinearLayout>
 

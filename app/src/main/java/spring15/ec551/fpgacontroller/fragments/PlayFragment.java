@@ -73,8 +73,11 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
     CustomTextView mThresholdText;
 
     // Throttle
-    ThrottleSlider mThrottleSlider;
+//    ThrottleSlider mThrottleSlider;
     CustomTextView mThrottleSpeed;
+    Button mForwardButton;
+    Button mStopButton;
+    Button mBackButton;
 
     // "FIRE THE LASERS!"
     LinearLayout mFireHud;
@@ -143,6 +146,35 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
 
         // Throttle
         mThrottleSpeed = (CustomTextView) view.findViewById(R.id.throttle_speed);
+        mForwardButton = (Button) view.findViewById(R.id.throttle_forward);
+        mStopButton = (Button) view.findViewById(R.id.throttle_stop);
+        mBackButton = (Button) view.findViewById(R.id.throttle_backward);
+
+        mForwardButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                throttle_state = FORWARD;
+                throttle_command();
+            }
+        });
+
+        mStopButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                throttle_state = STOP;
+                throttle_command();
+            }
+        });
+
+        mBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                throttle_state = BACK;
+                throttle_command();
+            }
+        });
+
+        /*
         mThrottleSlider = (ThrottleSlider) view.findViewById(R.id.throttle_slider);
         mThrottleSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -178,6 +210,7 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
             }
 
         });
+        */
 
         // Fire
         mFireButton = (Button) view.findViewById(R.id.fire_button);
@@ -469,6 +502,24 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
             last_steering_state = steering_state;
             if (mIsSocketConnected && allowOutput) { MainActivity.BluetoothStaticObject.sendByte(steering_state); }
             System.out.println("STEERING : " + s);
+        }
+    }
+
+    public void throttle_command() {
+        String s;
+        if (throttle_state == STOP) {
+            s = "STOP";
+        } else if (throttle_state == FORWARD) {
+            throttle_state = FORWARD;
+            s = "FORWARD";
+        } else {
+            throttle_state = BACK;
+            s = "REVERSE";
+        }
+        if (!(throttle_state == last_throttle_state)) {
+            last_throttle_state = throttle_state;
+            if (mIsSocketConnected && allowOutput) { MainActivity.BluetoothStaticObject.sendByte(throttle_state); }
+            System.out.println("THROTTLE : " + s);
         }
     }
 
