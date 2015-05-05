@@ -42,8 +42,8 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
 
     // BIT Values that respond to controls
     final int STOP = 12;    // bit 2,3
-    final int BACK = 4;     // bit 2
-    final int FORWARD = 8;  // bit 3
+    final int BACK = 8;     // bit 3
+    final int FORWARD = 4;  // bit 2
 
     final int NEUTRAL = 3;  // bit 0,1
     final int LEFT = 1;     // bit 0
