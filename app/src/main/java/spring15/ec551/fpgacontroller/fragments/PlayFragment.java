@@ -3,12 +3,8 @@ package spring15.ec551.fpgacontroller.fragments;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,12 +15,8 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import spring15.ec551.fpgacontroller.R;
@@ -60,8 +52,11 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
     final int NO_FIRE = 0;
     final int FIRE_ZE_LAZERS = 16;  // bit 5
 
-    // The rate in which values are checked and sent
+    // The rate in which values are checked and sent (Deprecated)
     int RATE_OF_OUTPUT_SIGNAL = 20;   // in milliseconds
+
+    // The sensitivity of steering angle.  Neutral is between +/- Steering Threshold
+    int STEERING_THRESHOLD = 10;
 
     Context mContext;
     FragmentActionListener mListener;
@@ -72,6 +67,10 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
 
     // Steering
     ImageView mSteeringIcon;
+    CustomTextView mSteeringAngleText;
+    Button mIncreaseThreshold;
+    Button mDecreaseThreshold;
+    CustomTextView mThresholdText;
 
     // Throttle
     ThrottleSlider mThrottleSlider;
@@ -91,10 +90,6 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
     int mCurrentAmmo;
     int mReloadDelay;
 
-    Button mIncreaseRate;
-    Button mDecreaseRate;
-    CustomTextView mRateText;
-
     Button mDisableSignal;
     boolean allowOutput = false;
 
@@ -107,9 +102,6 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
     // Saves the last state so that signals for latches are only sent when there is a change
     int last_throttle_state = 0;
     int last_steering_state = 0;
-
-    // The sensitivity of steering angle.  Neutral is between +/- Steering Threshold
-    final int STEERING_THRESHOLD = 20;
 
     public static PlayFragment newInstance(boolean isSocketConnected) {
         PlayFragment fragment = new PlayFragment();
@@ -147,6 +139,7 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
         // Steering
         mSteeringIcon = (ImageView) view.findViewById(R.id.steering_rotating_icon);
         mSteeringIcon.setRotation(0.0f);
+        mSteeringAngleText = (CustomTextView) view.findViewById(R.id.current_angle_text);
 
         // Throttle
         mThrottleSpeed = (CustomTextView) view.findViewById(R.id.throttle_speed);
@@ -156,12 +149,22 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 mThrottleSpeed.setText(speedDecimalFormat.format(progress - ThrottleSlider.MID_PROGRESS) + "%");
                 int speed = progress - ThrottleSlider.MID_PROGRESS;
+                String s = "";
                 if (speed == 0) {
                     throttle_state = STOP;
+                    s = "STOP";
                 } else if (speed > 0) {
                     throttle_state = FORWARD;
+                    s = "FORWARD";
                 } else {
                     throttle_state = BACK;
+                    s = "REVERSE";
+                }
+
+                if (!(throttle_state == last_throttle_state)) {
+                    last_throttle_state = throttle_state;
+                    if (mIsSocketConnected && allowOutput) { MainActivity.BluetoothStaticObject.sendByte(throttle_state); }
+                    System.out.println("THROTTLE : " + s);
                 }
             }
 
@@ -173,6 +176,7 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
             }
+
         });
 
         // Fire
@@ -220,23 +224,27 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
             }
         });
 
-        // Output signal rate - Control the rate in which signals are sent
-        mRateText = (CustomTextView) view.findViewById(R.id.ms_text);
-        mRateText.setText("" + RATE_OF_OUTPUT_SIGNAL + " ms");
-        mIncreaseRate = (Button) view.findViewById(R.id.ms_increase);
-        mDecreaseRate = (Button) view.findViewById(R.id.ms_decrease);
-        mIncreaseRate.setOnClickListener(new View.OnClickListener() {
+        // Steering sensitivity (between +/- threshold value
+        mThresholdText = (CustomTextView) view.findViewById(R.id.th_text);
+        mThresholdText.setText("+/-" + STEERING_THRESHOLD + "\u00B0");
+        mIncreaseThreshold = (Button) view.findViewById(R.id.th_increase);
+        mDecreaseThreshold = (Button) view.findViewById(R.id.th_decrease);
+        mIncreaseThreshold.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                RATE_OF_OUTPUT_SIGNAL += 1;
-                mRateText.setText("" + RATE_OF_OUTPUT_SIGNAL + " ms");
+                if (STEERING_THRESHOLD < 45) {
+                    STEERING_THRESHOLD += 1;
+                    mThresholdText.setText("+/-" + STEERING_THRESHOLD + "\u00B0");
+                }
             }
         });
-        mDecreaseRate.setOnClickListener(new View.OnClickListener() {
+        mDecreaseThreshold.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                RATE_OF_OUTPUT_SIGNAL -= 1;
-                mRateText.setText("" + RATE_OF_OUTPUT_SIGNAL + " ms");
+                if (STEERING_THRESHOLD > 1) {
+                    STEERING_THRESHOLD -= 1;
+                    mThresholdText.setText("+/-" + STEERING_THRESHOLD + "\u00B0");
+                }
             }
         });
 
@@ -254,7 +262,7 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
         } else {
             Toast.makeText(mContext, "No Bluetooth Connection Detected!", Toast.LENGTH_SHORT).show();
         }
-        sendInstructions();
+//        sendInstructions();
 
         return view;
     }
@@ -338,7 +346,8 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
      */
     private void shootLaser() {
         if (!isAmmoEmpty()) {
-//            MainActivity.BluetoothStaticObject.sendByte(LEFT);
+            if (mIsSocketConnected && allowOutput) { MainActivity.BluetoothStaticObject.sendByte(FIRE_ZE_LAZERS); }
+            System.out.println("LASER FIRED!");
             mCurrentAmmo -= 1;
             mAmmoTextView.setText(mCurrentAmmo + "/" + mMaxAmmo);
             mAmmoSlider.setProgress(mCurrentAmmo);
@@ -442,12 +451,24 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
     @Override
     public void onAngleChangeListener(int angleValue) {
         mSteeringIcon.setRotation(angleValue);
+        mSteeringAngleText.setText("" + angleValue + "\u00B0");
+
+        String s;
         if (angleValue < -STEERING_THRESHOLD) {
             steering_state = LEFT;
+            s = "LEFT";
         } else if (angleValue > STEERING_THRESHOLD) {
             steering_state = RIGHT;
+            s = "RIGHT";
         } else {
             steering_state = NEUTRAL;
+            s = "NEUTRAL";
+        }
+
+        if (!(steering_state == last_steering_state)) {
+            last_steering_state = steering_state;
+            if (mIsSocketConnected && allowOutput) { MainActivity.BluetoothStaticObject.sendByte(steering_state); }
+            System.out.println("STEERING : " + s);
         }
     }
 
@@ -468,15 +489,14 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
                         }
                         System.out.println("Output: " + s);
                     }
-                    if (mIsSocketConnected) {
-                        MainActivity.BluetoothStaticObject.sendBytes(b_array);
-                    }
+                    if (mIsSocketConnected && allowOutput) { MainActivity.BluetoothStaticObject.sendBytes(b_array); }
                 }
-                handler.postDelayed(this, RATE_OF_OUTPUT_SIGNAL);
+//                handler.postDelayed(this, RATE_OF_OUTPUT_SIGNAL);
             }
         };
 
-        handler.postDelayed(outputRunnable, RATE_OF_OUTPUT_SIGNAL);
+        handler.post(outputRunnable);
+//        handler.postDelayed(outputRunnable, RATE_OF_OUTPUT_SIGNAL);
                     /*----------------*/
 
 

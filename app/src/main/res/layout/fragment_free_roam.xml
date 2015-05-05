@@ -87,6 +87,15 @@
                 android:background="@drawable/calibration_line_drawable_green"
                 android:layout_centerInParent="true"
                 android:adjustViewBounds="true" />
+            <spring15.ec551.fpgacontroller.resources.CustomTextView
+                android:id="@+id/current_angle_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/current_angle_text"
+                android:layout_marginBottom="@dimen/current_angle_margin_bot"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"/>
         </RelativeLayout>
 
     </LinearLayout>
@@ -105,13 +114,13 @@
         android:layout_alignParentBottom="true"
         android:background="@color/hud_blue">
         <Button
-            android:id="@+id/ms_increase"
+            android:id="@+id/th_increase"
             android:layout_width="@dimen/button_size"
             android:layout_height="@dimen/button_size"
             android:background="@drawable/button_up_selector"
             android:layout_marginRight="@dimen/hud_margin"/>
         <Button
-            android:id="@+id/ms_decrease"
+            android:id="@+id/th_decrease"
             android:layout_width="@dimen/button_size"
             android:layout_height="@dimen/button_size"
             android:background="@drawable/button_down_selector" />
@@ -119,7 +128,7 @@
     </LinearLayout>
 
     <spring15.ec551.fpgacontroller.resources.CustomTextView
-        android:id="@+id/ms_text"
+        android:id="@+id/th_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/hud_margin"
@@ -127,7 +136,7 @@
         android:layout_marginBottom="@dimen/hud_margin"
         android:layout_toRightOf="@id/ms_control"
         android:layout_toEndOf="@id/ms_control"
-        android:textSize="@dimen/steering_text_size"
+        android:textSize="@dimen/steering_sensitivity_text_size"
         android:layout_alignParentBottom="true" >
     </spring15.ec551.fpgacontroller.resources.CustomTextView>
 
