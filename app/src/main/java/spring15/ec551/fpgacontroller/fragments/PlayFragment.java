@@ -262,7 +262,7 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
         } else {
             Toast.makeText(mContext, "No Bluetooth Connection Detected!", Toast.LENGTH_SHORT).show();
         }
-//        sendInstructions();
+        sendInstructions();
 
         return view;
     }
@@ -479,23 +479,34 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
         final Runnable outputRunnable = new Runnable() {
             @Override
             public void run() {
-                if (allowOutput) {
-                    /* Byte Array */
-                    byte[] b_array = generateOutputByteBuffer();
-                    if (b_array.length > 0) {
-                        String s = "";
-                        for (byte b : b_array) {
-                            s += Integer.toHexString(b) + " ";
-                        }
-                        System.out.println("Output: " + s);
-                    }
-                    if (mIsSocketConnected && allowOutput) { MainActivity.BluetoothStaticObject.sendBytes(b_array); }
+                    /* SINGLE BYTE */
+                final int b = (throttle_state);
+                if (mIsSocketConnected) {
+                    if (b == FORWARD || b == BACK)
+                        MainActivity.BluetoothStaticObject.sendByte(b);
                 }
-//                handler.postDelayed(this, RATE_OF_OUTPUT_SIGNAL);
+
+                handler.postDelayed(this, RATE_OF_OUTPUT_SIGNAL);
             }
         };
+        handler.postDelayed(outputRunnable, RATE_OF_OUTPUT_SIGNAL);
+    }
 
-        handler.post(outputRunnable);
+//                if (allowOutput) {
+//                    /* Byte Array */
+//                    byte[] b_array = generateOutputByteBuffer();
+//                    if (b_array.length > 0) {
+//                        String s = "";
+//                        for (byte b : b_array) {
+//                            s += Integer.toHexString(b) + " ";
+//                        }
+//                        System.out.println("Output: " + s);
+//                    }
+//                    if (mIsSocketConnected && allowOutput) { MainActivity.BluetoothStaticObject.sendBytes(b_array); }
+//                }
+////                handler.postDelayed(this, RATE_OF_OUTPUT_SIGNAL);
+
+
 //        handler.postDelayed(outputRunnable, RATE_OF_OUTPUT_SIGNAL);
                     /*----------------*/
 
@@ -510,7 +521,7 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
                         }
                     }
                     /* --------------- */
-    }
+
 
     public byte[] generateOutputByteBuffer() {
         List<Byte> byteBuffer = new ArrayList<>();
