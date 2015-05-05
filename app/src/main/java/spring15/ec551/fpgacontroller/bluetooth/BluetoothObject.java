@@ -173,7 +173,6 @@ public class BluetoothObject {
     }
 
     public void sendByte(int one_byte) {
-        Log.d("", Integer.toHexString(one_byte) + " ");
         mConnectedThread.write(one_byte);
     }
 

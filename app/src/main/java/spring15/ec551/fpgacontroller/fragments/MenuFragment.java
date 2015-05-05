@@ -120,11 +120,7 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
                 // TODO
                 break;
             case FREE_ROAM:
-                if (MainActivity.BluetoothStaticObject.getConnectedSockets()) {
-                    mListener.onMenuItemClickListener(FREE_ROAM);
-                } else {
-                    Toast.makeText(mContext, "Vehicle Not Connected", Toast.LENGTH_LONG).show();
-                }
+                mListener.onMenuItemClickListener(FREE_ROAM);
                 break;
             case SETTINGS:
                 initializeSettingsMenu();
