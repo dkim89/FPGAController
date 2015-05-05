@@ -104,16 +104,19 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
     int steering_state;
     int laser_state;
 
-    // Saves the last state so that signals for latches are not reptitively sent
+    // Saves the last state so that signals for latches are only sent when there is a change
     int last_throttle_state = 0;
     int last_steering_state = 0;
+
+    // The sensitivity of steering angle.  Neutral is between +/- Steering Threshold
+    final int STEERING_THRESHOLD = 20;
 
     public static PlayFragment newInstance(boolean isSocketConnected) {
         PlayFragment fragment = new PlayFragment();
         Bundle args = new Bundle();
         args.putBoolean(SOCKET_BOOLEAN, isSocketConnected);
         fragment.setArguments(args);
-        return new PlayFragment();
+        return fragment;
     }
 
     public PlayFragment() {
@@ -439,9 +442,9 @@ public class PlayFragment extends Fragment implements ControllerInterfaceListene
     @Override
     public void onAngleChangeListener(int angleValue) {
         mSteeringIcon.setRotation(angleValue);
-        if (angleValue < -10) {
+        if (angleValue < -STEERING_THRESHOLD) {
             steering_state = LEFT;
-        } else if (angleValue > 10) {
+        } else if (angleValue > STEERING_THRESHOLD) {
             steering_state = RIGHT;
         } else {
             steering_state = NEUTRAL;
