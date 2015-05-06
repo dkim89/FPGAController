@@ -7,7 +7,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.util.Log;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -43,7 +42,7 @@ public class BluetoothObject {
     public final int READ_MESSAGE = 300;
 
     BluetoothAdapter mBTAdapter;
-    ConnectedThread mConnectedThread;
+    ConnectedSocketThread mConnectedSocketThread;
     Set<BluetoothDevice> mPairedDevices;
     ArrayList<BluetoothDevice> mConnectedDevices;
     BluetoothConnectionStateListener mConnectionStateListener;
@@ -162,18 +161,18 @@ public class BluetoothObject {
 
     public void connectIOStream(BluetoothSocket socket) {
         if (socket.isConnected()) {
-            mConnectedThread = new ConnectedThread(socket);
-            mConnectedThread.start();
+            mConnectedSocketThread = new ConnectedSocketThread(socket);
+            mConnectedSocketThread.start();
         }
 
     }
 
     public void closeIOStream() {
-        mConnectedThread.cancel();
+        mConnectedSocketThread.cancel();
     }
 
     public void sendByte(int one_byte) {
-        mConnectedThread.write(one_byte);
+        mConnectedSocketThread.write(one_byte);
     }
 
     public void setConnectionStateListener(BluetoothConnectionStateListener listener) {
@@ -188,7 +187,7 @@ public class BluetoothObject {
 //        for (int i=0; i < bytes.length; i++) {
 //            Log.d("" + i + ": ", "" + Integer.toHexString(bytes[i]) + "\n" );
 //        }
-        mConnectedThread.write(bytes);
+        mConnectedSocketThread.write(bytes);
     }
 
 

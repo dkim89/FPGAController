@@ -13,14 +13,14 @@ import spring15.ec551.fpgacontroller.activities.MainActivity;
 /**
  * Created by davidkim on 4/30/15.
  */
-public class ConnectedThread extends Thread {
+public class ConnectedSocketThread extends Thread {
 
     private final BluetoothSocket mmSocket;
     private final InputStream mmInStream;
     private final OutputStream mmOutStream;
     Handler mHandler;
 
-    public ConnectedThread(BluetoothSocket socket) {
+    public ConnectedSocketThread(BluetoothSocket socket) {
         mmSocket = socket;
         InputStream tmpIn = null;
         OutputStream tmpOut = null;
